@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="44367590-60b1-46f6-a626-bf11c117f3a0" name="Changes" comment="" />
+    <list default="true" id="44367590-60b1-46f6-a626-bf11c117f3a0" name="Changes" comment="Implemented better AI">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/misc/server-tester.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/DeepCopy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/GameNode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/GameTree.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/images/tutorialIcon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page1.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page2.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page3.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page4.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Client/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Win.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Win.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+        <option name="usePluginRegistry" value="true" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProjectId" id="2VfkAiwb3bcuXH9hkbsP8Ydya3K" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -17,9 +73,72 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false"
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "18",
+    "last_opened_file_path": "/Users/alex/Programming/NEA/Actual/release/metaNC-release",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings",
+    "two.files.diff.last.used.file": "/Users/alex/Programming/NEA/Actual/metaNC-networked/src/server/ServerMain.java",
+    "two.files.diff.last.used.folder": "/Users/alex/Programming/NEA/Actual/metaNC-networked/src/client"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Client/src/main/resources" />
+      <recent name="$PROJECT_DIR$/Client/src/main/resources/images" />
+      <recent name="$PROJECT_DIR$/Server/src" />
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$/src/main/java" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Client/misc" />
+      <recent name="$PROJECT_DIR$/Server/src/main/java" />
+      <recent name="$PROJECT_DIR$/Client" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Client">
+    <configuration name="Client" type="Application" factoryName="Application" singleton="false">
+      <option name="MAIN_CLASS_NAME" value="ClientMain" />
+      <module name="Client" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Server - headless logging" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="18" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="ServerMain" />
+      <module name="Server" />
+      <option name="PROGRAM_PARAMETERS" value="--headless -L" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Server" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="18" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="ServerMain" />
+      <module name="Server" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Server" />
+      <item itemvalue="Application.Client" />
+      <item itemvalue="Application.Server - headless logging" />
+    </list>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -28,8 +147,19 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1695234383038</updated>
+      <workItem from="1695234384347" duration="5962000" />
+      <workItem from="1695241435534" duration="4645000" />
+      <workItem from="1695559195360" duration="6833000" />
+      <workItem from="1695673790018" duration="2000" />
+      <workItem from="1695747190195" duration="11000" />
+      <workItem from="1696022230383" duration="19266000" />
+      <workItem from="1696753411945" duration="2861000" />
+      <workItem from="1697970773340" duration="2718000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -41,5 +171,20 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Implemented better AI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented better AI" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/Server/src/main/java/Lobby.java</url>
+          <line>133</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

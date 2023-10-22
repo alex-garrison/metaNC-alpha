@@ -1,15 +1,19 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class ServerClientHandler implements Runnable {
     private final Socket serverClientSocket;
+    private ServerClient serverClient;
     private Lobby lobby;
 
     private ServerClientReader reader;
     private ServerClientWriter writer;
     private boolean keepRunning;
 
+    private final String serverKey;
     private int clientID = 0;
 
     private final int TIMEOUT_MILLIS = 500;
@@ -22,6 +26,8 @@ public class ServerClientHandler implements Runnable {
             output("Error setting timeout");
         }
 
+        serverKey = Client.getServerKey();
+
         keepRunning = true;
     }
 
@@ -32,7 +38,6 @@ public class ServerClientHandler implements Runnable {
         readerThread.start();
 
         writer = new ServerClientWriter();
-        writer.send("CLIENTID:" + clientID);
 
         while (keepRunning) {
             if (!reader.keepRunning) {
@@ -74,13 +79,19 @@ public class ServerClientHandler implements Runnable {
         this.clientID = clientID;
     }
 
+    public void setServerClient(ServerClient serverClient) {
+        this.serverClient = serverClient;
+    }
+
     public void setLobby(Lobby lobby) {
         this.lobby = lobby;
         send("LOBBYID:"+lobby.lobbyID);
     }
 
     private void output(String text) {
-        Server.print("C" + clientID + ": " + text);
+        if (serverClient.isAuthorised()) {
+            Server.print("C" + clientID + ": " + text);
+        }
     }
 
     public void stopRunning() {
@@ -120,52 +131,41 @@ public class ServerClientHandler implements Runnable {
                             nullDataCounter++;
                             Thread.sleep(100);
                         } else if (!receivedData.isEmpty()) {
-                            String[] args = receivedData.split(":");
-
-                            if (args[0].equals("TURN")) {
-                                try {
-                                    String[] locationString = args[1].split("");
-                                    int[] location = new int[3];
-                                    for (int i = 0; i < location.length; i++) {
-                                        location[i] = Integer.parseInt(locationString[i]);
+                            if (!serverClient.isAuthorised()) {
+                                if (serverKey == null) {
+                                    if (receivedData.equals("AUTH")) {
+                                        serverClient.authoriseClient();
+                                        writer.send("CLIENTID:" + clientID);
                                     }
-                                    lobby.turn(location, clientID);
-                                } catch (NumberFormatException | IndexOutOfBoundsException e) {
-                                    output("Error with TURN command");
                                 }
-                            } else if (args[0].equals("DISCONNECT")) {
-                                stopRunning();
-                            } else if (args[0].equals("NEWGAME")) {
-                                if (lobby != null) {
-                                    lobby.newGame();
+                                if (receivedData.equals("AUTH:" + serverKey)) {
+                                    serverClient.authoriseClient();
+                                    writer.send("CLIENTID:" + clientID);
                                 }
                             } else {
-                                output("Client sent : " + receivedData);
+                                String[] args = receivedData.split(":");
+
+                                if (args[0].equals("TURN")) {
+                                    try {
+                                        String[] locationString = args[1].split("");
+                                        int[] location = new int[3];
+                                        for (int i = 0; i < location.length; i++) {
+                                            location[i] = Integer.parseInt(locationString[i]);
+                                        }
+                                        lobby.turn(location, clientID);
+                                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                                        output("Error with TURN command");
+                                    }
+                                } else if (args[0].equals("DISCONNECT")) {
+                                    stopRunning();
+                                } else if (args[0].equals("NEWGAME")) {
+                                    if (lobby != null) {
+                                        lobby.newGame();
+                                    }
+                                } else {
+                                    output("Client sent : " + receivedData);
+                                }
                             }
-//                            switch (args[0]) {
-//                                case "TURN":
-//                                    try {
-//                                        String[] locationString = args[1].split("");
-//                                        int[] location = new int[3];
-//                                        for (int i = 0; i < location.length; i++) {
-//                                            location[i] = Integer.parseInt(locationString[i]);
-//                                        }
-//                                        lobby.turn(location, clientID);
-//                                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
-//                                        output("Error with TURN command");
-//                                    }
-//                                    break;
-//                                case "DISCONNECT":
-//                                    stopRunning();
-//                                    break;
-//                                case "NEWGAME":
-//                                    if (lobby != null) {
-//                                        lobby.newGame();
-//                                    }
-//                                    break;
-//                                case default:
-//                                    output("Client sent : " + receivedData);
-//                                }
                         }
                     }  catch (SocketTimeoutException e) {} catch (IOException e) {
                         output("Error reading data : " + e);
@@ -212,13 +212,14 @@ public class ServerClientHandler implements Runnable {
 
             while (!messageSent && writer != null) {
                 try {
-                    writer.write(message.strip());
+                    writer.write(message);
                     writer.newLine();
                     writer.flush();
                     messageSent = true;
                 } catch (SocketTimeoutException e) {} catch (IOException e) {
                     if (errorCount >= 5) {
                         close();
+                        return;
                     } else {
                         output("Error sending message : " + e);
                         errorCount++;

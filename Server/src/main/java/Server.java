@@ -1,6 +1,8 @@
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -11,16 +13,18 @@ public class Server implements Runnable {
     public static Server server;
     public static int serverID;
 
-    private ServerSocket serverSocket;
-    private static ArrayList<ServerClient> serverClients;
+    private static ServerSocket serverSocket;
+    public static ArrayList<ServerClient> serverClients;
 
     public static ArrayList<Lobby> lobbies;
     private static int lobbyCounter = 1;
     private static TreeSet<Integer> availableLobbyIDs;
 
     private static clientHandler clientHandler;
+    private static loggingHandler loggingHandler;
 
     private static boolean isHeadless;
+    private static boolean isLogging;
     private static boolean serverRunning;
 
     public Server() {
@@ -29,6 +33,7 @@ public class Server implements Runnable {
         availableLobbyIDs = new TreeSet<>();
         serverRunning = true;
         isHeadless = ServerMain.isHeadless();
+        isLogging = ServerMain.isLogging();
 
         server = this;
         serverID = this.hashCode();
@@ -36,6 +41,12 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+        if (isLogging) {
+            loggingHandler = new loggingHandler();
+            Thread loggingHandlerThread = new Thread(loggingHandler);
+            loggingHandlerThread.start();
+        }
+
         output("Started server");
 
         try {
@@ -78,6 +89,7 @@ public class Server implements Runnable {
 
         output("Server stopped");
         if (!isHeadless) ServerMain.serverStopped();
+        if (isLogging) Server.loggingHandler.stopRunning();
     }
 
     private static void broadcast(String message) {
@@ -105,6 +117,10 @@ public class Server implements Runnable {
             System.out.println(text);
         } else {
             ServerGUI.frame.printToServer(text);
+        }
+
+        if (isLogging) {
+            Server.loggingHandler.log(text);
         }
     }
 
@@ -143,7 +159,12 @@ public class Server implements Runnable {
     private static int getLobbyID() {
         int lobbyID;
         if (availableLobbyIDs.size() > 0) {
-            lobbyID =  availableLobbyIDs.pollFirst();
+            try {
+                lobbyID =  availableLobbyIDs.pollFirst();
+            } catch (NullPointerException e) {
+                lobbyID = lobbyCounter;
+                lobbyCounter++;
+            }
         } else {
             lobbyID = lobbyCounter;
             lobbyCounter++;
@@ -176,8 +197,8 @@ public class Server implements Runnable {
         }
     }
 
-    class clientHandler implements Runnable {
-        private static final LinkedList<ServerClient> waitingClients = new LinkedList<>();
+    static class clientHandler implements Runnable {
+        public static final LinkedList<ServerClient> waitingClients = new LinkedList<>();
         @Override
         public void run() {
             while (serverRunning) {
@@ -188,32 +209,28 @@ public class Server implements Runnable {
 
                     ServerClient serverClient = new ServerClient(serverClientSocket, serverClientHandler, serverClientHandlerThread);
                     serverClientHandlerThread.start();
-
-                    if (serverClient.isConnected()) {
-                        serverClients.add(serverClient);
-
-                        waitingClients.add(serverClient);
-                    }
-
-                    synchronized (waitingClients) {
-                        if (waitingClients.size() >= 2) {
-                            ServerClient player1 = waitingClients.removeFirst();
-                            ServerClient player2 = waitingClients.removeFirst();
-
-                            Lobby lobby = new Lobby(new ServerClient[]{player1, player2}, getLobbyID());
-                            player1.setLobby(lobby);
-                            player2.setLobby(lobby);
-
-                            Thread lobbyThread = new Thread(lobby);
-                            lobbyThread.start();
-
-                            lobbies.add(lobby);
-                        }
-                    }
                 } catch (SocketTimeoutException e) {} catch (IOException e) {
-                    if (serverRunning) {
-                        output("Error accepting serverClient : " + e.getMessage());
-                    }
+                    output("Error accepting serverClient : " + e);
+                }
+            }
+        }
+
+        public static void addAuthorisedClient(ServerClient serverClient) {
+            waitingClients.add(serverClient);
+
+            synchronized (waitingClients) {
+                if (waitingClients.size() >= 2) {
+                    ServerClient player1 = waitingClients.removeFirst();
+                    ServerClient player2 = waitingClients.removeFirst();
+
+                    Lobby lobby = new Lobby(new ServerClient[]{player1, player2}, getLobbyID());
+                    player1.setLobby(lobby);
+                    player2.setLobby(lobby);
+
+                    Thread lobbyThread = new Thread(lobby);
+                    lobbyThread.start();
+
+                    lobbies.add(lobby);
                 }
             }
         }
@@ -222,6 +239,57 @@ public class Server implements Runnable {
             if (waitingClients.contains(serverClient)) {
                 waitingClients.remove(serverClient);
             }
+        }
+    }
+
+    static class loggingHandler implements Runnable {
+        String logFileName = "serverLog.txt";
+        FileWriter fileWriter;
+        boolean keepRunning = true;
+
+        @Override
+        public void run() {
+            try {
+                fileWriter = new FileWriter(logFileName, false);
+
+                while (keepRunning) {
+                    Thread.sleep(100);
+                }
+
+                fileWriter.close();
+            } catch (IOException e) {
+                output("Could not open log file");
+            } catch (InterruptedException e) {
+                output("Error with loggingHandler thread");
+            }
+        }
+
+        public void log(String message) {
+            boolean messageSent = false;
+            int errorCount = 0;
+
+            while (keepRunning && fileWriter != null && messageSent != true) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    String timestamp = dateFormat.format(new Date());
+
+                    fileWriter.write("[" + timestamp + "] " + message.strip());
+                    fileWriter.write("\n");
+                    fileWriter.flush();
+
+                    messageSent = true;
+                } catch (IOException e) {
+                    if (errorCount >= 5) {
+                        keepRunning = false;
+                    } else {
+                        errorCount++;
+                    }
+                }
+            }
+        }
+
+        public void stopRunning() {
+            this.keepRunning = false;
         }
     }
 }

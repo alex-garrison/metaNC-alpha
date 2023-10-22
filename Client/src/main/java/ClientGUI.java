@@ -7,20 +7,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Objects;
 
 public class ClientGUI extends JFrame {
     public static ClientGUI frame;
+    private static NetworkConfigDialog networkConfigDialog;
+    private static TutorialDialog tutorialDialog;
 
     private boolean isNetworked;
     private boolean waitingForNewGame;
 
     private final Color BACKGROUND = new Color(224, 225, 221);
-    private final Color LINE = new Color(13, 27, 42);
-    private final Color OPTION_PANEL_BACKGROUND = new Color(27, 38, 59);
     private final Color BOARD_INDICATOR = new Color(65, 90, 119);
-    private final Color WON_BOARD = new Color(119, 141, 169);
+    public final Color WON_BOARD = new Color(56, 102, 65);
     private final Color ERROR = new Color(230, 57, 70);
     private final Color WIN = new Color(106, 153, 78);
 
@@ -39,10 +38,11 @@ public class ClientGUI extends JFrame {
     private JButton networkConfigButton;
     private JLabel networkLabel;
     private JLabel playerLabel;
+    private JButton tutorialButton;
 
     private int[] currentMove;
-    private int clientID;
-    private int lobbyID;
+    int clientID;
+    int lobbyID;
 
     public ClientGUI() {
         isNetworked = false;
@@ -57,10 +57,9 @@ public class ClientGUI extends JFrame {
         setMinimumSize(new Dimension(450, 500));
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().setBackground(OPTION_PANEL_BACKGROUND);
 
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(3,3));
+        mainPanel.setLayout(new GridLayout(3,3, 5, 5));
 
         boardPanels = new JPanel[9];
         cells = new JButton[9][3][3];
@@ -82,18 +81,15 @@ public class ClientGUI extends JFrame {
 
     private JPanel createBoardPanel(int boardIndex) {
         JPanel boardPanel = new JPanel();
-        boardPanel.setLayout(new GridLayout(3,3));
-        boardPanel.setBackground(BACKGROUND);
-        boardPanel.setBorder(new LineBorder(LINE, 2));
+        boardPanel.setLayout(new GridLayout(3,3, -1, -1));
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 JButton cell = new JButton("");
                 cell.setPreferredSize(new Dimension(50,50));
-                cell.setBorder(new LineBorder(LINE,1));
+                cell.setBorder(new LineBorder(Color.WHITE,1));
                 cell.setOpaque(false);
                 cell.setContentAreaFilled(false);
-                cell.setForeground(LINE);
                 cell.setFont(new Font("monospaced", Font.PLAIN, 40));
                 cell.addActionListener(new CellClickListener(boardIndex, row, col));
                 boardPanel.add(cell);
@@ -136,14 +132,24 @@ public class ClientGUI extends JFrame {
         bottomLabel.setFont(new Font(bottomLabel.getFont().getFontName(), Font.PLAIN, 20));
         bottomLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        ImageIcon tutorialIcon;
+        try {
+            tutorialIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/tutorialIcon.png")));
+        } catch (NullPointerException e) {
+            tutorialIcon = new ImageIcon();
+        }
+
+        tutorialIcon = new ImageIcon(tutorialIcon.getImage().getScaledInstance(20,20, Image.SCALE_SMOOTH));
+        tutorialButton = new JButton(tutorialIcon);
+        tutorialButton.addActionListener(new TutorialListener());
+
         gameOptionPanel.add(newGameButton);
         gameOptionPanel.add(Box.createRigidArea(new Dimension(5,-1)));
         gameOptionPanel.add(selectMode);
         gameOptionPanel.add(Box.createHorizontalGlue());
         gameOptionPanel.add(bottomLabel);
         gameOptionPanel.add(Box.createHorizontalGlue());
-
-        gameOptionPanel.setBackground(OPTION_PANEL_BACKGROUND);
+        gameOptionPanel.add(tutorialButton);
 
         return gameOptionPanel;
     }
@@ -153,7 +159,6 @@ public class ClientGUI extends JFrame {
         networkOptionPanel.setLayout(new BoxLayout(networkOptionPanel, BoxLayout.X_AXIS));
         networkOptionPanel.setBorder(new EmptyBorder(3,5,3,5));
         networkOptionPanel.setPreferredSize(new Dimension((int) networkOptionPanel.getPreferredSize().getWidth(), 40));
-        networkOptionPanel.setBackground(OPTION_PANEL_BACKGROUND);
 
         connectButton = new JButton("Connect");
         connectButton.addActionListener(new ConnectClickListener());
@@ -163,25 +168,24 @@ public class ClientGUI extends JFrame {
         disconnectButton.addActionListener(new DisconnectClickListener());
         disconnectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        ImageIcon configIcon = new ImageIcon(this.getClass().getResource("/images/configIcon.png"));
-        if (configIcon != null) {
-            configIcon = new ImageIcon(configIcon.getImage().getScaledInstance(20,20, Image.SCALE_SMOOTH));
-            networkConfigButton = new JButton(configIcon);
-            networkConfigButton.addActionListener(new NetworkConfigListener());
-        } else {
-            networkConfigButton = new JButton();
-            networkConfigButton.addActionListener(new NetworkConfigListener());
+        ImageIcon configIcon;
+        try {
+            configIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/configIcon.png")));
+        } catch (NullPointerException e) {
+            configIcon = new ImageIcon();
         }
+
+        configIcon = new ImageIcon(configIcon.getImage().getScaledInstance(20,20, Image.SCALE_SMOOTH));
+        networkConfigButton = new JButton(configIcon);
+        networkConfigButton.addActionListener(new NetworkConfigListener());
 
         networkLabel = new JLabel("");
         networkLabel.setFont(new Font(networkLabel.getFont().getFontName(), Font.PLAIN, 20));
         networkLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        networkLabel.setForeground(BACKGROUND);
 
         playerLabel = new JLabel("");
         playerLabel.setFont(new Font(playerLabel.getFont().getFontName(), Font.PLAIN, 35));
         playerLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        playerLabel.setForeground(BACKGROUND);
 
         networkButton = new JButton();
         networkButton.setPreferredSize(new Dimension(110, networkButton.getPreferredSize().height));
@@ -251,11 +255,15 @@ public class ClientGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!ClientMain.isHostSet()) {
-                NetworkConfigDialog dialog = new NetworkConfigDialog(frame);
-                dialog.setVisible(true);
+                if (networkConfigDialog == null) {
+                    networkConfigDialog = new NetworkConfigDialog(frame);
+                }
 
-                if (dialog.getIpAddress() != null && dialog.getPort() != 0) {
-                    ClientMain.setHostAndPort(dialog.getIpAddress(), dialog.getPort());
+                networkConfigDialog.setVisible(true);
+                networkConfigDialog.setLocationRelativeTo(frame);
+
+                if (networkConfigDialog.getIpAddress() != null && networkConfigDialog.getPort() != 0) {
+                    ClientMain.setHostAndPort(networkConfigDialog.getIpAddress(), networkConfigDialog.getPort());
                 } else {
                     return;
                 }
@@ -276,16 +284,31 @@ public class ClientGUI extends JFrame {
         }
     }
 
-    private class NetworkConfigListener implements ActionListener {
+    private static class NetworkConfigListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            if (networkConfigDialog == null) {
+                networkConfigDialog = new NetworkConfigDialog(frame);
+            }
 
-            NetworkConfigDialog networkConfigDialog = new NetworkConfigDialog(frame);
             networkConfigDialog.setVisible(true);
+            networkConfigDialog.setLocationRelativeTo(frame);
 
             if (networkConfigDialog.getIpAddress() != null && networkConfigDialog.getPort() != 0) {
                 ClientMain.setHostAndPort(networkConfigDialog.getIpAddress(), networkConfigDialog.getPort());
             }
+        }
+    }
+
+    private static class TutorialListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (tutorialDialog == null) {
+                tutorialDialog = new TutorialDialog(frame);
+            }
+
+            tutorialDialog.setVisible(true);
+            tutorialDialog.setLocationRelativeTo(frame);
         }
     }
 
@@ -332,7 +355,7 @@ public class ClientGUI extends JFrame {
                             if ((boardIndex == lastMove[0]) && (row == lastMove[1]) && (col == lastMove[2])) {
                                 cells[boardIndex][row][col].setForeground(ERROR);
                             } else {
-                                cells[boardIndex][row][col].setForeground(LINE);
+                                cells[boardIndex][row][col].setForeground(Color.WHITE);
                             }
                         }
                     }
@@ -346,8 +369,10 @@ public class ClientGUI extends JFrame {
     public void setBoardColours(Board board, String clientPlayer) {
         try {
             SwingUtilities.invokeAndWait(() -> {
+                Color defaultCol = topPanel.getBackground();
                 Color col;
                 for (int i = 0; i < boardPanels.length; i++) {
+                    col = defaultCol;
                     if (board.getCorrectLocalBoard() == i && !board.isWon && board.whoseTurn().equals(clientPlayer)) {
                         col = BOARD_INDICATOR;
                     } else if (board.isWonBoard(i)) {
@@ -355,8 +380,6 @@ public class ClientGUI extends JFrame {
                             setWinPanel(i, board);
                         }
                         col = WON_BOARD;
-                    } else {
-                        col = BACKGROUND;
                     }
                     boardPanels[i].setBackground(col);
                 }
@@ -369,8 +392,10 @@ public class ClientGUI extends JFrame {
     public void setBoardColours(Board board) {
         try {
             SwingUtilities.invokeAndWait(() -> {
+                Color defaultCol = topPanel.getBackground();
                 Color col;
                 for (int i = 0; i < boardPanels.length; i++) {
+                    col = defaultCol;
                     if (board.getCorrectLocalBoard() == i && !board.isWon) {
                         col = BOARD_INDICATOR;
                     } else if (board.isWonBoard(i)) {
@@ -378,8 +403,6 @@ public class ClientGUI extends JFrame {
                             setWinPanel(i, board);
                         }
                         col = WON_BOARD;
-                    } else {
-                        col = BACKGROUND;
                     }
                     boardPanels[i].setBackground(col);
                 }
@@ -421,10 +444,12 @@ public class ClientGUI extends JFrame {
 
     public void setClientID(int clientID) {
         this.clientID = clientID;
+        networkConfigDialog.setClientID();
     }
 
     public void setLobbyID(int lobbyID) {
         this.lobbyID = lobbyID;
+        networkConfigDialog.setLobbyID();
     }
 
     public void setNetworkLabel(String text, boolean error) {
@@ -491,6 +516,10 @@ public class ClientGUI extends JFrame {
         return playerLabel.getText();
     }
 
+    public void setNewGameEnabled(Boolean isEnabled) {
+        newGameButton.setEnabled(isEnabled);
+    }
+
     public static void startGUI() throws InterruptedException, InvocationTargetException {
         String os = System.getProperty("os.name").toLowerCase();
 
@@ -504,144 +533,5 @@ public class ClientGUI extends JFrame {
             frame = new ClientGUI();
             frame.setVisible(true);
         });
-    }
-
-    class NetworkConfigDialog extends JDialog {
-        private InetAddress DEFAULT_HOST;
-        private final int DEFAULT_PORT = 8000;
-
-        private final JTextField ipField;
-        private final JTextField portField;
-        private final JTextPane clientIDPane;
-        private final JTextPane lobbyIDPane;
-        private final JButton okButton;
-        private final JButton cancelButton;
-
-        private InetAddress ipAddress;
-        private int port;
-
-        public NetworkConfigDialog(Frame parent) {
-            super(parent, "Network Configuration", true);
-            setMinimumSize(new Dimension(250, 200));
-            setResizable(false);
-
-            try {
-                DEFAULT_HOST = InetAddress.getLocalHost();
-            } catch (UnknownHostException e) {
-                System.out.println("Could not get localHost : " + e);
-            }
-
-            ipField = new JTextField(DEFAULT_HOST.getHostAddress(), 15);
-            ipField.setFont(new Font("monospaced", Font.PLAIN, 13));
-            if (ClientMain.getHost() != null) {
-                ipField.setText(ClientMain.getHost().getHostAddress());
-            }
-            ipField.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            portField = new JTextField(String.valueOf(DEFAULT_PORT), 5);
-            portField.setFont(new Font("monospaced", Font.PLAIN, 13));
-            if (ClientMain.getPort() != 0) {
-                portField.setText(String.valueOf(ClientMain.getPort()));
-            }
-            portField.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            clientIDPane = new JTextPane();
-            clientIDPane.setFont(new Font("monospaced", Font.PLAIN, 13));
-            clientIDPane.setForeground(BACKGROUND);
-            clientIDPane.setEditable(false);
-            clientIDPane.setBackground(null);
-            clientIDPane.setBorder(null);
-            if (clientID == 0) {
-                clientIDPane.setText("-");
-            } else {
-                clientIDPane.setText(String.valueOf(clientID));
-            }
-
-            lobbyIDPane = new JTextPane();
-            lobbyIDPane.setFont(new Font("monospaced", Font.PLAIN, 13));
-            lobbyIDPane.setForeground(BACKGROUND);
-            lobbyIDPane.setEditable(false);
-            lobbyIDPane.setBackground(null);
-            lobbyIDPane.setBorder(null);
-            if (lobbyID != 0) {
-                lobbyIDPane.setText(String.valueOf(lobbyID));
-            } else {
-                lobbyIDPane.setText("-");
-            }
-
-            okButton = new JButton("OK");
-            cancelButton = new JButton("Cancel");
-
-            okButton.addActionListener(e -> {
-                try {
-                    ipAddress = InetAddress.getByName(ipField.getText());
-                    port = Integer.parseInt(portField.getText());
-                    dispose();
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(NetworkConfigDialog.this, "Invalid port number", "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (UnknownHostException ex) {
-                    JOptionPane.showMessageDialog(NetworkConfigDialog.this, "Invalid IP address", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-
-            cancelButton.addActionListener(e -> dispose());
-
-            JPanel contentPane = new JPanel();
-            contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-
-            JPanel clientIDPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JLabel clientIDLabel = new JLabel("ClientID :");
-            clientIDLabel.setForeground(BACKGROUND);
-            clientIDPanel.add(clientIDLabel);
-            clientIDPanel.add(clientIDPane);
-            clientIDPanel.setBackground(OPTION_PANEL_BACKGROUND);
-
-            JPanel lobbyIDPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JLabel lobbyIDLabel = new JLabel("Lobby :");
-            lobbyIDLabel.setForeground(BACKGROUND);
-            lobbyIDPanel.add(lobbyIDLabel);
-            lobbyIDPanel.add(lobbyIDPane);
-            lobbyIDPanel.setBackground(OPTION_PANEL_BACKGROUND);
-
-            JPanel ipPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JLabel ipLabel = new JLabel("IP Address:");
-            ipLabel.setForeground(BACKGROUND);
-            ipPanel.add(ipLabel);
-            ipPanel.add(ipField);
-            ipPanel.setBackground(OPTION_PANEL_BACKGROUND);
-
-            JPanel portPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JLabel portLabel = new JLabel("Port:");
-            portLabel.setForeground(BACKGROUND);
-            portPanel.add(portLabel);
-            portPanel.add(portField);
-            portPanel.setBackground(OPTION_PANEL_BACKGROUND);
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.add(okButton);
-            buttonPanel.add(cancelButton);
-            buttonPanel.setBackground(OPTION_PANEL_BACKGROUND);
-
-            contentPane.add(clientIDPanel);
-            contentPane.add(lobbyIDPanel);
-            contentPane.add(Box.createRigidArea(new Dimension(-1, 5)));
-            contentPane.add(ipPanel);
-            contentPane.add(portPanel);
-            contentPane.add(buttonPanel);
-
-            contentPane.setBackground(OPTION_PANEL_BACKGROUND);
-
-            getRootPane().setDefaultButton(okButton);
-            setContentPane(contentPane);
-            setLocationRelativeTo(parent);
-        }
-
-        public InetAddress getIpAddress() {
-            return ipAddress;
-        }
-
-        public int getPort() {
-            return port;
-        }
     }
 }

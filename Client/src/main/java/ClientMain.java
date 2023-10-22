@@ -111,10 +111,12 @@ public class ClientMain {
             boolean isPVAI = false;
             boolean isAIVAI = false;
 
-            switch (mode) {
-                case "PvP" -> isPVP = true;
-                case "PvAI" -> isPVAI = true;
-                case "AIvAI" -> isAIVAI = true;
+            if (mode.equals("PvP")) {
+                isPVP = true;
+            } else if (mode.equals("PvAI")) {
+                isPVAI = true;
+            } else if (mode.equals("AIvAI")) {
+                isAIVAI = true;
             }
 
             if (!(isPVP || isPVAI || isAIVAI)) {

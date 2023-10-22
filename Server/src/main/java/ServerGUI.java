@@ -1,3 +1,5 @@
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -19,6 +21,7 @@ public class ServerGUI extends JFrame {
 
     private static JTabbedPane tabs;
 
+    private static JPanel contentPane;
     private static JPanel serverOutputPanel;
     private static JTextArea serverOutput;
 
@@ -38,17 +41,16 @@ public class ServerGUI extends JFrame {
     }
 
     private void initGUI() {
+        FlatMacDarkLaf.setup();
+
         setTitle("uNC - Server");
         setMinimumSize(new Dimension(500, 550));
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        getContentPane().setBackground(BACKGROUND);
 
         optionPanel = new JPanel();
         optionPanel.setBorder(new EmptyBorder(10,20,0,25));
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
-        optionPanel.setBackground(BACKGROUND);
 
         startServerButton = new JButton("Start");
         startServerButton.addActionListener(new StartServerListener());
@@ -71,7 +73,7 @@ public class ServerGUI extends JFrame {
 
         serverOutputPanel = new JPanel();
         serverOutputPanel.setBorder(new EmptyBorder(0,5,0,5));
-        serverOutputPanel.setBackground(BACKGROUND);
+        serverOutputPanel.setLayout(new GridLayout());
 
         serverOutput = new JTextArea();
         serverOutput.setFont(new Font("monospaced", Font.PLAIN, 15));
@@ -88,12 +90,18 @@ public class ServerGUI extends JFrame {
         serverOutputPanel.add(scrollPane);
 
         tabs = new JTabbedPane();
+        tabs.setForeground(TEXT);
         tabs.setBorder(new EmptyBorder(10,10,10,10));
         tabs.add("Server", serverOutputPanel);
 
-        add(optionPanel);
-        add(Box.createVerticalGlue());
-        add(tabs);
+        contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+
+        contentPane.add(optionPanel);
+        contentPane.add(Box.createVerticalGlue());
+        contentPane.add(tabs);
+
+        add(contentPane);
     }
 
     private class StartServerListener implements ActionListener {
@@ -188,7 +196,11 @@ public class ServerGUI extends JFrame {
 
 
     public void printToServer(String text) {
-        serverOutput.append(text + "\n");
+        if (!SwingUtilities.isEventDispatchThread()) {
+            try {
+                SwingUtilities.invokeAndWait(() -> serverOutput.append(text + "\n"));
+            } catch (InterruptedException | InvocationTargetException e) {}
+        }
     }
 
     public static void clear() {

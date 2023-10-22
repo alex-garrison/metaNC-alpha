@@ -1,4 +1,6 @@
-public class Win {
+import java.io.Serializable;
+
+public class Win implements Serializable {
     private boolean isWin;
     private String winner;
     private String winType;

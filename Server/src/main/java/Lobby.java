@@ -127,7 +127,7 @@ public class Lobby implements Runnable {
                         } else {
                             int clientWinner = serverNetworkedBoard.getClientID(serverNetworkedBoard.winner);
                             if (clientWinner != 0) {
-                                output("Board won by " + clientWinner);
+                                output("Board won by C:" + clientWinner);
                             }
                         }
 
@@ -158,7 +158,7 @@ public class Lobby implements Runnable {
             for (ServerClient serverClient : serverClients) {
                 try {
                     String player = serverNetworkedBoard.addPlayer(serverClient.getClientID());
-                    output(serverClient.getClientID() + " assigned player : " + player);
+                    output("C"+serverClient.getClientID() + " assigned player : " + player);
                     Server.send(serverClient, "ASSIGNPLAYER:" + player);
                     clientsAssigned = true;
                 } catch (GameException e) {

@@ -6,7 +6,7 @@ public class ServerClient {
     private final ServerClientHandler serverClientHandler;
     private final Thread serverClientHandlerThread;
     private final int clientID;
-    private boolean isConnected;
+    private boolean isAuthorised;
     private Lobby lobby;
 
     public ServerClient(Socket serverClientSocket, ServerClientHandler serverClientHandler, Thread serverClientHandlerThread) {
@@ -14,17 +14,24 @@ public class ServerClient {
         this.serverClientHandler = serverClientHandler;
         this.serverClientHandlerThread = serverClientHandlerThread;
         this.clientID = (this.hashCode() / 100000);
-        this.isConnected = true;
-
-        output("new client accepted");
+        this.isAuthorised = false;
 
         this.serverClientHandler.setClientID(this.clientID);
+        this.serverClientHandler.setServerClient(this);
 
+        new Thread(new authMonitor(this)).start();
         new Thread(new monitor(this)).start();
     }
 
     public void stopClient() {
         serverClientHandler.stopRunning();
+    }
+
+    public void authoriseClient() {
+        isAuthorised = true;
+        output("New client authorised");
+        Server.clientHandler.addAuthorisedClient(this);
+        Server.serverClients.add(this);
     }
 
     public void output(String text) {
@@ -35,8 +42,8 @@ public class ServerClient {
         return clientID;
     }
 
-    public boolean isConnected() {
-        return isConnected;
+    public boolean isAuthorised() {
+        return isAuthorised;
     }
 
     public ServerClientHandler getServerClientHandler() {
@@ -71,16 +78,32 @@ public class ServerClient {
                     }
                 }
 
-                isConnected = false;
-
-                if (lobby != null) {
-                    lobby.serverClientDisconnected(serverClient);
-                } else {
-                    Server.serverClientDisconnected(serverClient, false);
+                if (isAuthorised) {
+                    if (lobby != null) {
+                        lobby.serverClientDisconnected(serverClient);
+                    } else {
+                        Server.serverClientDisconnected(serverClient, false);
+                    }
                 }
-
             }
         }
     }
 
+    private class authMonitor implements Runnable {
+        ServerClient serverClient;
+        public authMonitor(ServerClient serverClient) {
+            this.serverClient = serverClient;
+        }
+        public void run() {
+            try {
+                Thread.sleep(10000);
+
+                if (!isAuthorised) {
+                    serverClient.stopClient();
+                }
+            } catch (InterruptedException e) {
+                output("Error waiting for serverClientHandlerThread to stop");
+            }
+        }
+    }
 }
