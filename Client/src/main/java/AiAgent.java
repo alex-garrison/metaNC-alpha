@@ -12,7 +12,7 @@ public class AiAgent {
     }
 
     public int[] getMove() throws GameException {
-        return getAIMove();
+        return findBestMove(board, board.turn);
     }
 
     private int[] getRandomMove() throws GameException {
@@ -21,10 +21,6 @@ public class AiAgent {
             throw new GameException("No more valid moves. Draw.");
         }
         return validMoves[rand.nextInt(validMoves.length)];
-    }
-
-    private int[] getAIMove() {
-        return findBestMove(board, board.turn);
     }
 
     public static int[] findBestMove(Board board, String player) {

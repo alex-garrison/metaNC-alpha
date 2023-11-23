@@ -54,7 +54,7 @@ public class ClientGUI extends JFrame {
         FlatMacDarkLaf.setup();
 
         setTitle("Ultimate Noughts and Crosses");
-        setMinimumSize(new Dimension(450, 500));
+        setMinimumSize(new Dimension(500, 550));
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -86,7 +86,7 @@ public class ClientGUI extends JFrame {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 JButton cell = new JButton("");
-                cell.setPreferredSize(new Dimension(50,50));
+                cell.setMinimumSize(new Dimension(50,50));
                 cell.setBorder(new LineBorder(Color.WHITE,1));
                 cell.setOpaque(false);
                 cell.setContentAreaFilled(false);
@@ -124,7 +124,7 @@ public class ClientGUI extends JFrame {
         newGameButton.setFont(new Font(newGameButton.getFont().getFontName(), Font.PLAIN, 15));
         newGameButton.addActionListener(new NewGameClickListener());
 
-        selectMode = new JComboBox<>(new String[]{"Set mode", "-", "PvP", "PvAI", "AIvAI"});
+        selectMode = new JComboBox<>(new String[]{"Set mode", "-", "PvP", "PvAI"});
         selectMode.setFont(new Font(selectMode.getFont().getFontName(), Font.PLAIN, 15));
         selectMode.setMaximumSize(new Dimension(40, selectMode.getPreferredSize().height));
 
@@ -245,7 +245,7 @@ public class ClientGUI extends JFrame {
                         newGameButton.notify();
                     }
                 } else {
-                    ClientMain.restartGameloop(false);
+                    ClientMain.restartGameloop(false, false);
                 }
             }
         }
@@ -324,10 +324,8 @@ public class ClientGUI extends JFrame {
 
     public void waitForModeSelect() throws InterruptedException {
         if (!isNetworked) {
-            while ((!(getMode().equals("PvP") || getMode().equals("PvAI") || getMode().equals("AIvAI"))) && !Thread.currentThread().isInterrupted()) {
-
+            while ((!(getMode().equals("PvP") || getMode().equals("PvAI") && !Thread.currentThread().isInterrupted()))) {
                 Thread.sleep(100);
-
             }
         }
     }
@@ -507,7 +505,7 @@ public class ClientGUI extends JFrame {
         if (isConnected) {
             selectMode.setModel(new DefaultComboBoxModel<>(new String[]{"PvP - online"}));
         } else {
-            selectMode.setModel(new DefaultComboBoxModel<>(new String[]{"Set mode", "-", "PvP", "PvAI", "AIvAI"}));
+            selectMode.setModel(new DefaultComboBoxModel<>(new String[]{"Set mode", "-", "PvP", "PvAI"}));
         }
 
     }

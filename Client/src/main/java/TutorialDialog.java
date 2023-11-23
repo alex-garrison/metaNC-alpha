@@ -8,12 +8,13 @@ public class TutorialDialog extends JDialog {
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
     private final JPanel buttonPanel;
+    private final JButton closeButton;
     private final int maxPages = 4;
     private int currentIndex = 1;
 
     public TutorialDialog(ClientGUI clientGUI) {
         super(clientGUI,"Tutorial", true);
-        setMinimumSize(new Dimension(475, 425));
+        setMinimumSize(new Dimension(475, 450));
         setResizable(false);
 
         setLayout(new BorderLayout());
@@ -35,13 +36,18 @@ public class TutorialDialog extends JDialog {
         backButton.setPreferredSize(new Dimension(40,40));
         backButton.addActionListener(e -> showPreviousCard());
 
+        closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> dispose());
+
         JButton forwardButton = new JButton(">");
         forwardButton.setPreferredSize(new Dimension(40,40));
         forwardButton.addActionListener(e -> showNextCard());
 
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(backButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        buttonPanel.add(closeButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         buttonPanel.add(forwardButton);
         buttonPanel.add(Box.createHorizontalGlue());
 
@@ -83,7 +89,9 @@ public class TutorialDialog extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        panel.add(editorPane, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
         return panel;
     }
 }

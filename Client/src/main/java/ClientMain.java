@@ -24,7 +24,7 @@ public class ClientMain {
 
         executorService = Executors.newSingleThreadExecutor();
 
-        startGameloop(true);
+        startGameloop(true, true);
     }
 
     public static boolean isHostSet() {
@@ -57,8 +57,8 @@ public class ClientMain {
         }
     }
 
-    private static void startGameloop(boolean waitForNewGame) {
-        gameLoop = new GameLoop(waitForNewGame);
+    private static void startGameloop(boolean waitForNewGame, boolean waitForModeSelect) {
+        gameLoop = new GameLoop(waitForNewGame, waitForModeSelect);
         gameLoopFuture = executorService.submit(gameLoop);
     }
 
@@ -67,26 +67,35 @@ public class ClientMain {
         gameLoopFuture.cancel(true);
     }
 
-    public static void restartGameloop(boolean waitForNewGame) {
+    public static void restartGameloop(boolean waitForNewGame, boolean waitForModeSelect) {
         stopGameloop();
-        startGameloop(waitForNewGame);
+        startGameloop(waitForNewGame, waitForModeSelect);
     }
 
     static class GameLoop implements Runnable {
         private String mode;
         public boolean gameLoopRunning;
         private boolean waitForNewGame;
+        private boolean waitForModeSelect;
 
-        public GameLoop(boolean waitForNewGame) {
+        public GameLoop(boolean waitForNewGame, boolean waitForModeSelect) {
             this.waitForNewGame = waitForNewGame;
+            this.waitForModeSelect = waitForModeSelect;
             gameLoopRunning = true;
         }
 
         public void run() {
             if (waitForNewGame) {
                 try {
-                    ClientGUI.frame.waitForModeSelect();
                     ClientGUI.frame.waitForNewGame();
+                } catch (InterruptedException e) {
+                    System.out.println("Error waiting : " + e);
+                }
+            }
+
+            if (waitForModeSelect) {
+                try {
+                    ClientGUI.frame.waitForModeSelect();
                 } catch (InterruptedException e) {
                     System.out.println("Error waiting : " + e);
                 }
@@ -100,6 +109,7 @@ public class ClientMain {
         private void gameLoop() {
             ClientGUI.frame.resetBoardPanels();
             ClientGUI.frame.clearBottomLabel();
+            ClientGUI.frame.clearNetworkLabel();
 
             Board board = new Board();
             board.emptyBoard();
@@ -109,19 +119,16 @@ public class ClientMain {
 
             boolean isPVP = false;
             boolean isPVAI = false;
-            boolean isAIVAI = false;
 
             if (mode.equals("PvP")) {
                 isPVP = true;
             } else if (mode.equals("PvAI")) {
                 isPVAI = true;
-            } else if (mode.equals("AIvAI")) {
-                isAIVAI = true;
             }
 
-            if (!(isPVP || isPVAI || isAIVAI)) {
+            if (!(isPVP || isPVAI)) {
                 System.out.println("Mode not set");
-                restartGameloop(true); return;
+                restartGameloop(true, true); return;
             }
 
             boolean errorOccurred = false;
@@ -171,16 +178,6 @@ public class ClientMain {
                             System.out.println(e.getMessage());
                         }
                     }
-                } else if (isAIVAI) {
-                    try {
-                        moveLocation = ai.getMove();
-                        Thread.sleep(AI_MOVE_DELAY);
-                    } catch (InterruptedException e) {
-                        break;
-                    } catch (GameException e) {
-                        System.out.println(e.getMessage());
-                    }
-
                 }
 
                 try {

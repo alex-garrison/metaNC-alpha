@@ -13,30 +13,9 @@ public class Win implements Serializable {
         this.winner = "No winner";
         this.winType = "No win";
     }
-    public int getLocalBoard() {
-        return localBoard;
-    }
-
-    public boolean isWin() {
-        return isWin;
-    }
 
     public String getWinner() {
         return winner;
-    }
-
-    public String getWinType() {
-        return winType;
-    }
-    public void setWinConditions(int localBoard, Boolean isWin) {
-        this.localBoard = localBoard;
-        this.isWin = isWin;
-    }
-
-    public void setWinConditions(int localBoard, Boolean isWin, String winType) {
-        this.localBoard = localBoard;
-        this.isWin = isWin;
-        this.winType = winType;
     }
 
     public void setWinConditions(int localBoard, Boolean isWin, String winType, String winner) {

@@ -25,7 +25,7 @@ class NetworkConfigDialog extends JDialog {
 
     public NetworkConfigDialog(ClientGUI clientGUI) {
         super(clientGUI, "Enter IP and Port", true);
-        setMinimumSize(new Dimension(250, 200));
+        setMinimumSize(new Dimension(250, 225));
         setResizable(false);
 
         try {
@@ -145,7 +145,7 @@ class NetworkConfigDialog extends JDialog {
             serverIpAddress = InetAddress.getByName(content.toString().split(":")[0].strip());
             serverPort = Integer.parseInt(content.toString().split(":")[1].strip());
         } catch (IOException e) {
-            System.out.println("Error retrieving server IP");
+            System.out.println("Error retrieving server IP : " + e.getClass().getSimpleName());
             serverIpAddress = DEFAULT_HOST;
             serverPort = DEFAULT_PORT;
         }

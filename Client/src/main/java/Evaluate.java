@@ -6,7 +6,7 @@ public class Evaluate {
     final static int CENTER_SCORE = 6;
     final static int CORNER_SCORE = 3;
 
-    public static int evaluateLocal(String[][] board, String player) { // between -40 and 40
+    public static int evaluateLocal(String[][] board, String player) {
         int boardScore = 0;
 
         for (String currPlayer : new String[]{"X","O"}) {
@@ -290,8 +290,8 @@ public class Evaluate {
 
         int globalBoardScore;
 
-        int currBoard = board.lastMove[0];
-        int currBoardScore = evaluateLocal(board.board[currBoard], player);
+        int currBoardLoc = board.lastMove[0];
+        int currBoardScore = evaluateLocal(board.board[currBoardLoc], player);
 
         int nextBoardLoc = board.lastMove[1] * 3 + board.lastMove[2];
         int nextBoardScore = 0;
@@ -328,7 +328,7 @@ public class Evaluate {
             globalBoardScore -= 80;
         }
 
-        int globalBoardWeight = (int) (Math.exp(board.getFillFactor() / 10f) / 5) + 1;
+        int globalBoardWeight = (int) (Math.exp((board.getFillFactor() / 20f)) / 5) + 1;
 
         return (int) Math.ceil(((3*currBoardScore + 2*nextBoardScore) + (globalBoardWeight * globalBoardScore)) / 5f);
     }

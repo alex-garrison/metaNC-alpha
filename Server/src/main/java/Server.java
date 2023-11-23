@@ -12,6 +12,7 @@ public class Server implements Runnable {
 
     public static Server server;
     public static int serverID;
+    public static String serverKey;
 
     private static ServerSocket serverSocket;
     public static ArrayList<ServerClient> serverClients;
@@ -27,13 +28,14 @@ public class Server implements Runnable {
     private static boolean isLogging;
     private static boolean serverRunning;
 
-    public Server() {
+    public Server(String serverKey) {
         serverClients = new ArrayList<>();
         lobbies = new ArrayList<>();
         availableLobbyIDs = new TreeSet<>();
         serverRunning = true;
         isHeadless = ServerMain.isHeadless();
         isLogging = ServerMain.isLogging();
+        this.serverKey = serverKey;
 
         server = this;
         serverID = this.hashCode();
@@ -66,6 +68,10 @@ public class Server implements Runnable {
             setNetworkLabel();
         }
 
+        if (serverKey == null) {
+            serverKey = Client.getServerKey();
+        }
+
         clientHandler = new clientHandler();
         Thread clientHandlerThread = new Thread(clientHandler);
         clientHandlerThread.start();
@@ -93,7 +99,7 @@ public class Server implements Runnable {
     }
 
     private static void broadcast(String message) {
-        for (ServerClient serverClient : serverClients) {
+        for (ServerClient  serverClient : serverClients) {
             send(serverClient, message);
         }
     }
@@ -148,7 +154,7 @@ public class Server implements Runnable {
     }
 
     public static void serverClientDisconnected(ServerClient serverClient, boolean stopServer) {
-        output("serverClient " + serverClient.getClientID() + " disconnected");
+        output("C" + serverClient.getClientID() + " disconnected");
         serverClients.remove(serverClient);
         Server.clientHandler.removeFromWaiting(serverClient);
         if (stopServer) {
@@ -210,7 +216,7 @@ public class Server implements Runnable {
                     ServerClient serverClient = new ServerClient(serverClientSocket, serverClientHandler, serverClientHandlerThread);
                     serverClientHandlerThread.start();
                 } catch (SocketTimeoutException e) {} catch (IOException e) {
-                    output("Error accepting serverClient : " + e);
+                    output("Error accepting client : " + e);
                 }
             }
         }

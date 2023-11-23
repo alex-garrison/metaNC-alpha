@@ -5,6 +5,7 @@ public class ServerMain {
 
     private static boolean isHeadless;
     private static boolean isLogging;
+    private static String serverKey;
 
     private ServerMain() {}
 
@@ -13,11 +14,23 @@ public class ServerMain {
         isHeadless = false;
 
         if (args.length > 0) {
-            for (String arg: args) {
-                if (arg.equals("-H") || arg.equals("--headless")) {
+            for (int arg = 0; arg < args.length; arg++) {
+                if (args[arg].equals("-H") || args[arg].equals("--headless")) {
                     isHeadless = true;
-                } else if (arg.equals("-L") || arg.equals("--logging")) {
+                } else if (args[arg].equals("-L") || args[arg].equals("--logging")) {
                     isLogging = true;
+                } else if (args[arg].equals("-K") || args[arg].equals("--server-key")) {
+                    try {
+                        if (args[arg+1] != null && !(args[arg+1].equals("-H") || args[arg+1].equals("--headless")) || args[arg+1].equals("-L") || args[arg+1].equals("--logging")) {
+                            serverKey = args[arg+1];
+                        } else {
+                            System.out.println("Error with server key");
+                            return;
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Error with server key");
+                        return;
+                    }
                 }
             }
         }
@@ -30,6 +43,7 @@ public class ServerMain {
             }
         } else {
             serverMain.startServer();
+
             try {
                 serverThread.join();
             } catch (InterruptedException e) {
@@ -45,7 +59,7 @@ public class ServerMain {
                 ServerGUI.clearNetworkLabel();
             }
 
-            server = new Server();
+            server = new Server(serverKey);
             serverThread = new Thread(server);
             serverThread.start();
         }

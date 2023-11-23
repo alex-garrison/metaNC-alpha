@@ -7,6 +7,7 @@ public class ServerClient {
     private final Thread serverClientHandlerThread;
     private final int clientID;
     private boolean isAuthorised;
+    private boolean isConnected;
     private Lobby lobby;
 
     public ServerClient(Socket serverClientSocket, ServerClientHandler serverClientHandler, Thread serverClientHandlerThread) {
@@ -15,6 +16,7 @@ public class ServerClient {
         this.serverClientHandlerThread = serverClientHandlerThread;
         this.clientID = (this.hashCode() / 100000);
         this.isAuthorised = false;
+        this.isConnected = true;
 
         this.serverClientHandler.setClientID(this.clientID);
         this.serverClientHandler.setServerClient(this);
@@ -44,6 +46,10 @@ public class ServerClient {
 
     public boolean isAuthorised() {
         return isAuthorised;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
     }
 
     public ServerClientHandler getServerClientHandler() {
@@ -85,6 +91,7 @@ public class ServerClient {
                         Server.serverClientDisconnected(serverClient, false);
                     }
                 }
+                isConnected = false;
             }
         }
     }
@@ -96,9 +103,10 @@ public class ServerClient {
         }
         public void run() {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(20000);
 
                 if (!isAuthorised) {
+                    serverClientHandler.send("DISCONNECT");
                     serverClient.stopClient();
                 }
             } catch (InterruptedException e) {

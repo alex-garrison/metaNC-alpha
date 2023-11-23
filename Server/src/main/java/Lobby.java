@@ -38,7 +38,12 @@ public class Lobby implements Runnable {
         Server.removeLobby(this);
 
         for (ServerClient serverClient: serverClients) {
-            serverClient.stopClient();
+            if (serverClient.isConnected()) {
+                serverClient.getServerClientHandler().setLobby(null);
+                Server.clientHandler.addAuthorisedClient(serverClient);
+            } else {
+                serverClient.stopClient();
+            }
         }
     }
 
@@ -127,7 +132,7 @@ public class Lobby implements Runnable {
                         } else {
                             int clientWinner = serverNetworkedBoard.getClientID(serverNetworkedBoard.winner);
                             if (clientWinner != 0) {
-                                output("Board won by C:" + clientWinner);
+                                output("Board won by C" + clientWinner);
                             }
                         }
 
@@ -186,7 +191,7 @@ public class Lobby implements Runnable {
     }
 
     public void serverClientDisconnected(ServerClient serverClient) {
-        output("serverClient " + serverClient.getClientID() + " disconnected");
+        output("C" + serverClient.getClientID() + " disconnected");
         Server.serverClientDisconnected(serverClient, false);
         stopRunning();
     }

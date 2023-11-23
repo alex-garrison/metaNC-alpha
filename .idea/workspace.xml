@@ -7,35 +7,21 @@
     <list default="true" id="44367590-60b1-46f6-a626-bf11c117f3a0" name="Changes" comment="Implemented better AI">
       <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Client/misc/server-tester.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/DeepCopy.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/GameNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/GameTree.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/images/tutorialIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page1.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page2.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page3.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/tutorialPages/page4.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/compile.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Client/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Board.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/Win.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Win.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Server/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +32,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="editable-svg" />
       </list>
     </option>
   </component>
@@ -69,23 +56,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "jdk.selected.JAVA_MODULE": "18",
-    "last_opened_file_path": "/Users/alex/Programming/NEA/Actual/release/metaNC-release",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "MavenSettings",
-    "two.files.diff.last.used.file": "/Users/alex/Programming/NEA/Actual/metaNC-networked/src/server/ServerMain.java",
-    "two.files.diff.last.used.folder": "/Users/alex/Programming/NEA/Actual/metaNC-networked/src/client"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;18&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/alex/Programming/NEA/Actual/release/metaNC-release&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.uml&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/Users/alex/Programming/NEA/Actual/metaNC-networked/src/server/ServerMain.java&quot;,
+    &quot;two.files.diff.last.used.folder&quot;: &quot;/Users/alex/Programming/NEA/Practice/MinimaxTestGUI/src/client&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Client/src/main/resources" />
@@ -114,12 +101,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Server - headless logging" type="Application" factoryName="Application">
+    <configuration name="Server - headless " type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="18" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="ServerMain" />
       <module name="Server" />
-      <option name="PROGRAM_PARAMETERS" value="--headless -L" />
+      <option name="PROGRAM_PARAMETERS" value="--headless " />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -136,7 +123,7 @@
     <list>
       <item itemvalue="Application.Server" />
       <item itemvalue="Application.Client" />
-      <item itemvalue="Application.Server - headless logging" />
+      <item itemvalue="Application.Server - headless " />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -154,8 +141,22 @@
       <workItem from="1695747190195" duration="11000" />
       <workItem from="1696022230383" duration="19266000" />
       <workItem from="1696753411945" duration="2861000" />
-      <workItem from="1697970773340" duration="2718000" />
+      <workItem from="1697970773340" duration="9264000" />
+      <workItem from="1698243324299" duration="3066000" />
+      <workItem from="1698318753041" duration="6268000" />
+      <workItem from="1698835372097" duration="6238000" />
+      <workItem from="1699646213032" duration="6426000" />
+      <workItem from="1699706550154" duration="12738000" />
+      <workItem from="1699896965612" duration="14761000" />
     </task>
+    <task id="LOCAL-00001" summary="Implemented better AI">
+      <created>1697980894109</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1697980894109</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,11 +181,15 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/Server/src/main/java/Lobby.java</url>
-          <line>133</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java</url>
+          <line>84</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

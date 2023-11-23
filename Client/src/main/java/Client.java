@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
@@ -33,8 +34,8 @@ public class Client implements Runnable {
         ClientGUI.frame.clearPlayerLabel();
 
         if (connectToServer()) {
-            ClientGUI.frame.setNetworkLabel("Connected", false);
-            System.out.println("Connected to server : " + clientSocket);
+            ClientGUI.frame.setNetworkLabel("Connecting", false);
+            System.out.println("Connected to server : " + clientSocket.getInetAddress());
             isConnected = true;
             ClientGUI.frame.setNetworked(true);
             ClientGUI.frame.setNetworkButtonFunction(false);
@@ -47,13 +48,6 @@ public class Client implements Runnable {
             readerThread.start();
 
             writer = new ClientWriter();
-
-            String serverKey = getServerKey();
-            if (serverKey != null) {
-                writer.send("AUTH:" + serverKey);
-            } else {
-                writer.send("AUTH");
-            }
 
             try {
                 readerThread.join();
@@ -69,6 +63,7 @@ public class Client implements Runnable {
             ClientGUI.frame.setNetworkMode(false);
             ClientGUI.frame.setNetworked(false);
             ClientGUI.frame.setNetworkButtonFunction(true);
+            ClientGUI.frame.setNewGameEnabled(true);
             ClientGUI.frame.setClientID(0); ClientGUI.frame.setLobbyID(0);
             clientID = 0;
 
@@ -86,7 +81,7 @@ public class Client implements Runnable {
 
         System.out.println("Client stopped");
 
-        ClientMain.restartGameloop(true);
+        ClientMain.restartGameloop(true, true);
     }
 
     public void turn(int[] location) {
@@ -152,7 +147,7 @@ public class Client implements Runnable {
 
             return content.toString().strip();
         } catch (IOException e) {
-            System.out.println("Error retrieving server IP");
+            System.out.println("Error retrieving server key : " + e.getClass().getSimpleName());
         }
         return null;
     }
@@ -174,6 +169,15 @@ public class Client implements Runnable {
         ClientGUI.frame.setLobbyID(lobbyID);
         System.out.println("Set lobbyID : " + lobbyID);
         ClientGUI.frame.setNewGameEnabled(true);
+    }
+
+    private void lobbyDisconnected() {
+        System.out.println("Lobby disconnected");
+        ClientGUI.frame.setLobbyID(0);
+        ClientGUI.frame.setNewGameEnabled(false);
+        ClientGUI.frame.clearPlayerLabel();
+        ClientGUI.frame.resetBoardPanels();
+        ClientGUI.frame.setNetworkLabel("Lobby disconnected", true);
     }
 
     public void setPlayer(String player) {
@@ -266,11 +270,14 @@ public class Client implements Runnable {
                             } else if (args[0].equals("LOBBYID")) {
                                 try {
                                     setLobbyID(Integer.parseInt(args[1]));
+                                    ClientGUI.frame.setNetworkLabel("Lobby connected", false);
                                 } catch (IndexOutOfBoundsException e) {
                                     System.out.println("Error with LOBBYID command");
                                 } catch (Exception e) {
-                                    System.out.println("Error with setting clientID");
+                                    System.out.println("Error with setting lobbyID");
                                 }
+                            } else if (args[0].equals("LOBBYDISCONNECT")) {
+                                lobbyDisconnected();
                             } else if (args[0].equals("BOARD")) {
                                 try {
                                     updateBoard(args[1]);
@@ -302,6 +309,23 @@ public class Client implements Runnable {
                                     System.out.println("Error with ERROR command");
                                 } catch (Exception e) {
                                     System.out.println("Error displaying error message : " + e);
+                                }
+                            } else if (args[0].equals("REQAUTH")) {
+                                String serverKey = getServerKey();
+                                if (serverKey != null) {
+                                    writer.send("AUTH:" + serverKey);
+                                } else {
+                                    writer.send("AUTH");
+                                }
+                            } else if (args[0].equals("AUTHSUCCESS")) {
+                                ClientGUI.frame.setNetworkLabel("Connected", false);
+                            } else if (args[0].equals("AUTHFAIL")) {
+                                ClientGUI.frame.setNetworkLabel("Authorisation failed", false);
+
+                                String serverKey = JOptionPane.showInputDialog(ClientGUI.frame, "Please enter the server key : ");
+
+                                if (serverKey != null) {
+                                    writer.send("AUTH:" + serverKey);
                                 }
                             } else if (args[0].equals("DISCONNECT")) {
                                 keepRunning = false;

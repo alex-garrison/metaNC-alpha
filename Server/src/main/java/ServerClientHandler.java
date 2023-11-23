@@ -1,8 +1,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
 
 public class ServerClientHandler implements Runnable {
     private final Socket serverClientSocket;
@@ -13,7 +11,6 @@ public class ServerClientHandler implements Runnable {
     private ServerClientWriter writer;
     private boolean keepRunning;
 
-    private final String serverKey;
     private int clientID = 0;
 
     private final int TIMEOUT_MILLIS = 500;
@@ -26,8 +23,6 @@ public class ServerClientHandler implements Runnable {
             output("Error setting timeout");
         }
 
-        serverKey = Client.getServerKey();
-
         keepRunning = true;
     }
 
@@ -38,6 +33,8 @@ public class ServerClientHandler implements Runnable {
         readerThread.start();
 
         writer = new ServerClientWriter();
+
+        writer.send("REQAUTH");
 
         while (keepRunning) {
             if (!reader.keepRunning) {
@@ -84,8 +81,13 @@ public class ServerClientHandler implements Runnable {
     }
 
     public void setLobby(Lobby lobby) {
-        this.lobby = lobby;
-        send("LOBBYID:"+lobby.lobbyID);
+        if (lobby == null) {
+            this.lobby = null;
+            send("LOBBYDISCONNECT");
+        } else {
+            this.lobby = lobby;
+            send("LOBBYID:"+lobby.lobbyID);
+        }
     }
 
     private void output(String text) {
@@ -103,6 +105,7 @@ public class ServerClientHandler implements Runnable {
         private boolean keepRunning;
 
         private int nullDataCounter = 0;
+        private int authFailCounter = 0;
 
         public ServerClientReader() {
             keepRunning = true;
@@ -131,20 +134,31 @@ public class ServerClientHandler implements Runnable {
                             nullDataCounter++;
                             Thread.sleep(100);
                         } else if (!receivedData.isEmpty()) {
-                            if (!serverClient.isAuthorised()) {
-                                if (serverKey == null) {
-                                    if (receivedData.equals("AUTH")) {
-                                        serverClient.authoriseClient();
-                                        writer.send("CLIENTID:" + clientID);
-                                    }
-                                }
-                                if (receivedData.equals("AUTH:" + serverKey)) {
-                                    serverClient.authoriseClient();
-                                    writer.send("CLIENTID:" + clientID);
-                                }
-                            } else {
-                                String[] args = receivedData.split(":");
+                            String[] args = receivedData.split(":");
 
+                            if (!serverClient.isAuthorised()) {
+                                try {
+                                    if (Server.serverKey == null && args[0].equals("AUTH")) {
+                                        writer.send("CLIENTID:" + clientID);
+                                        writer.send("AUTHSUCCESS");
+                                        serverClient.authoriseClient();
+                                    } else if (args[0].equals("AUTH") && args[1].equals(Server.serverKey)) {
+                                        writer.send("CLIENTID:" + clientID);
+                                        writer.send("AUTHSUCCESS");
+                                        serverClient.authoriseClient();
+                                    } else if (args[0].equals("AUTH") && !args[1].equals(Server.serverKey)) {
+                                        writer.send("AUTHFAIL");
+                                        authFailCounter++;
+
+                                        if (authFailCounter >= 3) {
+                                            serverClient.stopClient();
+                                        }
+                                    }
+                                } catch (IndexOutOfBoundsException e) {
+                                    output("Error with AUTH command");
+                                }
+
+                            } else {
                                 if (args[0].equals("TURN")) {
                                     try {
                                         String[] locationString = args[1].split("");
@@ -168,7 +182,9 @@ public class ServerClientHandler implements Runnable {
                             }
                         }
                     }  catch (SocketTimeoutException e) {} catch (IOException e) {
-                        output("Error reading data : " + e);
+                        if (serverClient.isAuthorised()) {
+                            output("Error reading data : " + e);
+                        }
                         keepRunning = false;
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -208,7 +224,6 @@ public class ServerClientHandler implements Runnable {
 
         public void send(String message) {
             boolean messageSent = false;
-            int errorCount = 0;
 
             while (!messageSent && writer != null) {
                 try {
@@ -217,13 +232,9 @@ public class ServerClientHandler implements Runnable {
                     writer.flush();
                     messageSent = true;
                 } catch (SocketTimeoutException e) {} catch (IOException e) {
-                    if (errorCount >= 5) {
-                        close();
-                        return;
-                    } else {
-                        output("Error sending message : " + e);
-                        errorCount++;
-                    }
+                    output("Error sending message : " + e);
+                    close();
+                    return;
                 }
             }
         }
