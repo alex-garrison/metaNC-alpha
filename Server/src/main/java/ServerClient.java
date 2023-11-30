@@ -22,7 +22,7 @@ public class ServerClient {
         this.serverClientHandler.setServerClient(this);
 
         new Thread(new authMonitor(this)).start();
-        new Thread(new monitor(this)).start();
+        new Thread(new connMonitor(this)).start();
     }
 
     public void stopClient() {
@@ -65,9 +65,9 @@ public class ServerClient {
         return "C" + clientID;
     }
 
-    private class monitor implements Runnable {
+    private class connMonitor implements Runnable {
         ServerClient serverClient;
-        public monitor(ServerClient serverClient) {
+        public connMonitor(ServerClient serverClient) {
             this.serverClient = serverClient;
         }
         public void run() {

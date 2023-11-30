@@ -138,7 +138,9 @@ public class ServerClientHandler implements Runnable {
 
                             if (!serverClient.isAuthorised()) {
                                 try {
-                                    if (Server.serverKey == null && args[0].equals("AUTH")) {
+                                    if (args.length == 1 && args[0].equals("AUTH")) {
+                                        writer.send("AUTHFAIL");
+                                    } else if (Server.serverKey == null && args[0].equals("AUTH")) {
                                         writer.send("CLIENTID:" + clientID);
                                         writer.send("AUTHSUCCESS");
                                         serverClient.authoriseClient();
