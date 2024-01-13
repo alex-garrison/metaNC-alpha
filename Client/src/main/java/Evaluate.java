@@ -2,7 +2,7 @@ public class Evaluate {
     final static int WIN_SCORE = 100;
     final static int TWO_IN_A_ROW_SCORE = 16;
     final static double TWO_IN_A_ROW_WEIGHT = 1.5;
-    final static int BLOCKING_SCORE = 12;
+    final static int BLOCKING_SCORE = 14;
     final static int CENTER_SCORE = 6;
     final static int CORNER_SCORE = 3;
 
@@ -71,7 +71,7 @@ public class Evaluate {
             boardScore -= CORNER_SCORE;
         }
 
-        boolean isBlocked = false;
+        boolean isBlocked;
 
         for (int row = 0; row < board.length; row++) {
             isBlocked = false;

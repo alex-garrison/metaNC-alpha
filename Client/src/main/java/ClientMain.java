@@ -89,7 +89,7 @@ public class ClientMain {
                 try {
                     ClientGUI.frame.waitForNewGame();
                 } catch (InterruptedException e) {
-                    System.out.println("Error waiting : " + e);
+                    ClientGUI.frame.printToLog("Error waiting : " + e);
                 }
             }
 
@@ -97,7 +97,7 @@ public class ClientMain {
                 try {
                     ClientGUI.frame.waitForModeSelect();
                 } catch (InterruptedException e) {
-                    System.out.println("Error waiting : " + e);
+                    ClientGUI.frame.printToLog("Error waiting : " + e);
                 }
             }
 
@@ -127,7 +127,7 @@ public class ClientMain {
             }
 
             if (!(isPVP || isPVAI)) {
-                System.out.println("Mode not set");
+                ClientGUI.frame.printToLog("Mode not set");
                 restartGameloop(true, true); return;
             }
 
@@ -175,7 +175,7 @@ public class ClientMain {
                         } catch (InterruptedException e) {
                             break;
                         } catch (GameException e) {
-                            System.out.println(e.getMessage());
+                            ClientGUI.frame.printToLog(e.getMessage());
                         }
                     }
                 }

@@ -35,7 +35,7 @@ public class Client implements Runnable {
 
         if (connectToServer()) {
             ClientGUI.frame.setNetworkLabel("Connecting", false);
-            System.out.println("Connected to server : " + clientSocket.getInetAddress());
+            ClientGUI.frame.printToLog("Connected to server : " + clientSocket.getInetAddress());
             isConnected = true;
             ClientGUI.frame.setNetworked(true);
             ClientGUI.frame.setNetworkButtonFunction(false);
@@ -52,7 +52,7 @@ public class Client implements Runnable {
             try {
                 readerThread.join();
             } catch (InterruptedException e) {
-                System.out.println("Error waiting for readerThread to stop");
+                ClientGUI.frame.printToLog("Error waiting for readerThread to stop");
             }
             writer.close();
 
@@ -75,11 +75,11 @@ public class Client implements Runnable {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                System.out.println("Error closing socket");
+                ClientGUI.frame.printToLog("Error closing socket");
             }
         }
 
-        System.out.println("Client stopped");
+        ClientGUI.frame.printToLog("Client stopped");
 
         ClientMain.restartGameloop(true, true);
     }
@@ -104,7 +104,7 @@ public class Client implements Runnable {
                 clientSocket.setSoTimeout(TIMEOUT_MILLIS);
                 return true;
             } catch (IOException e) {
-                System.out.println("Error connecting to server : " + e);
+                ClientGUI.frame.printToLog("Error connecting to server : " + e);
                 connectionFailCounter++;
                 try {
                     Thread.sleep(100);
@@ -122,7 +122,7 @@ public class Client implements Runnable {
                 writer.send("DISCONNECT");
                 clientSocket.close();
             } catch (IOException e) {
-                System.out.println("Error closing socket");
+                ClientGUI.frame.printToLog("Error closing socket");
             }
         }
     }
@@ -147,14 +147,14 @@ public class Client implements Runnable {
 
             return content.toString().strip();
         } catch (IOException e) {
-            System.out.println("Error retrieving server key : " + e.getClass().getSimpleName());
+            ClientGUI.frame.printToLog("Error retrieving server key : " + e.getClass().getSimpleName());
         }
         return null;
     }
 
     public void sendNewGame() {
         if (writer != null) {
-            System.out.println("Sending new game");
+            ClientGUI.frame.printToLog("Sending new game");
             writer.send("NEWGAME");
         }
     }
@@ -162,17 +162,17 @@ public class Client implements Runnable {
     private void setClientID(int clientID) {
         this.clientID = clientID;
         ClientGUI.frame.setClientID(clientID);
-        System.out.println("Set clientID : " + clientID);
+        ClientGUI.frame.printToLog("Set clientID : " + clientID);
     }
 
     private void setLobbyID(int lobbyID) {
         ClientGUI.frame.setLobbyID(lobbyID);
-        System.out.println("Set lobbyID : " + lobbyID);
+        ClientGUI.frame.printToLog("Set lobbyID : " + lobbyID);
         ClientGUI.frame.setNewGameEnabled(true);
     }
 
     private void lobbyDisconnected() {
-        System.out.println("Lobby disconnected");
+        ClientGUI.frame.printToLog("Lobby disconnected");
         ClientGUI.frame.setLobbyID(0);
         ClientGUI.frame.setNewGameEnabled(false);
         ClientGUI.frame.clearPlayerLabel();
@@ -211,7 +211,7 @@ public class Client implements Runnable {
             try {
                 newNetworkedBoard.deserializeBoard(serialisedBoard);
             } catch (NumberFormatException e) {
-                System.out.println("Error deserializing : " + e);
+                ClientGUI.frame.printToLog("Error deserializing : " + e);
             }
 
             if (newNetworkedBoard.isEmptyBoard()) {
@@ -224,7 +224,7 @@ public class Client implements Runnable {
             ClientGUI.frame.setBoardColours(newNetworkedBoard, player);
             ClientGUI.frame.clearBottomLabel();
         } catch (GameException e) {
-            System.out.println("Board error : " + e);
+            ClientGUI.frame.printToLog("Board error : " + e);
         }
     }
 
@@ -244,12 +244,12 @@ public class Client implements Runnable {
                     try {
                         reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     } catch (IOException e) {
-                        System.out.println("Error initialising reader : " + e);
+                        ClientGUI.frame.printToLog("Error initialising reader : " + e);
                     }
                 } else {
                     try {
                         if (nullDataCounter >= 5) {
-                            System.out.println("Error with server.");
+                            ClientGUI.frame.printToLog("Error with server.");
                             keepRunning = false; continue;
                         }
 
@@ -263,18 +263,18 @@ public class Client implements Runnable {
                                 try {
                                     setClientID(Integer.parseInt(args[1]));
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with CLIENTID command");
+                                    ClientGUI.frame.printToLog("Error with CLIENTID command");
                                 } catch (Exception e) {
-                                    System.out.println("Error with setting clientID");
+                                    ClientGUI.frame.printToLog("Error with setting clientID");
                                 }
                             } else if (args[0].equals("LOBBYID")) {
                                 try {
                                     setLobbyID(Integer.parseInt(args[1]));
                                     ClientGUI.frame.setNetworkLabel("Lobby connected", false);
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with LOBBYID command");
+                                    ClientGUI.frame.printToLog("Error with LOBBYID command");
                                 } catch (Exception e) {
-                                    System.out.println("Error with setting lobbyID");
+                                    ClientGUI.frame.printToLog("Error with setting lobbyID");
                                 }
                             } else if (args[0].equals("LOBBYDISCONNECT")) {
                                 lobbyDisconnected();
@@ -283,7 +283,7 @@ public class Client implements Runnable {
                                     updateBoard(args[1]);
                                     setClientTurn(false);
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with BOARD command");
+                                    ClientGUI.frame.printToLog("Error with BOARD command");
                                 }
                             } else if (args[0].equals("NEWGAME")) {
                                 ClientGUI.frame.clearPlayerLabel();
@@ -292,7 +292,7 @@ public class Client implements Runnable {
                                 try {
                                     setPlayer(args[1]);
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with ASSIGNPLAYER command");
+                                    ClientGUI.frame.printToLog("Error with ASSIGNPLAYER command");
                                 }
                             } else if (args[0].equals("AWAITTURN")) {
                                 setClientTurn(true);
@@ -300,15 +300,15 @@ public class Client implements Runnable {
                                 try {
                                     boardWon(args[1]);
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with BOARDWON command");
+                                    ClientGUI.frame.printToLog("Error with BOARDWON command");
                                 }
                             } else if (args[0].equals("ERROR")) {
                                 try {
                                     ClientGUI.frame.setBottomLabel(args[1], true, false);
                                 } catch (IndexOutOfBoundsException e) {
-                                    System.out.println("Error with ERROR command");
+                                    ClientGUI.frame.printToLog("Error with ERROR command");
                                 } catch (Exception e) {
-                                    System.out.println("Error displaying error message : " + e);
+                                    ClientGUI.frame.printToLog("Error displaying error message : " + e);
                                 }
                             } else if (args[0].equals("REQAUTH")) {
                                 String serverKey = getServerKey();
@@ -330,11 +330,11 @@ public class Client implements Runnable {
                             } else if (args[0].equals("DISCONNECT")) {
                                 keepRunning = false;
                             } else {
-                                System.out.println("Server sent : " + receivedData);
+                                ClientGUI.frame.printToLog("Server sent : " + receivedData);
                             }
                         }
                     }  catch (SocketTimeoutException e) {} catch (IOException e) {
-                        System.out.println("Error reading data : " + e);
+                        ClientGUI.frame.printToLog("Error reading data : " + e);
                         keepRunning = false;
                     }
                 }
@@ -344,7 +344,7 @@ public class Client implements Runnable {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    System.out.println("Error closing reader" + e);
+                    ClientGUI.frame.printToLog("Error closing reader" + e);
                 }
             }
         }
@@ -361,7 +361,7 @@ public class Client implements Runnable {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             } catch (IOException e) {
-                System.out.println("Error initialising writer : " + e);
+                ClientGUI.frame.printToLog("Error initialising writer : " + e);
             }
         }
 
@@ -379,7 +379,7 @@ public class Client implements Runnable {
                     if (errorCount >= 5) {
                         return;
                     } else {
-                        System.out.println("Error sending message : " + e);
+                        ClientGUI.frame.printToLog("Error sending message : " + e);
                         errorCount++;
                     }
                 }
@@ -391,7 +391,7 @@ public class Client implements Runnable {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    System.out.println("Error closing writer" + e);
+                    ClientGUI.frame.printToLog("Error closing writer" + e);
                 }
             }
         }

@@ -27,7 +27,7 @@ public class AiAgent {
         HashMap<Board, Double> moveMap = new HashMap<>();
 
         GameTree gameTree = new GameTree(new GameNode(board));
-        GameTree.generateGameTree(board, player, 1, gameTree.root);
+        GameTree.generateGameTree(board, player, gameTree.root);
 
         for (GameNode terminalNode: gameTree.getTerminalNodes(gameTree.root)) {
             double boardScore = Evaluate.evaluateGlobal(terminalNode.board, player);

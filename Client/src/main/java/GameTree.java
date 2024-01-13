@@ -22,7 +22,7 @@ public class GameTree {
         }
     }
 
-    public static void generateGameTree(Board board, String currentPlayer, int depth, GameNode root) {
+    public static void generateGameTree(Board board, String currentPlayer, GameNode root) {
         if (board.isWin()) {
             return;
         }
@@ -30,15 +30,12 @@ public class GameTree {
         int[][] possibleMoves = board.getValidMovesAI();
 
         for (int[] move : possibleMoves) {
-            if (depth == 0) {
-                return;
-            }
 
             Board newBoard;
             try {
                 newBoard = DeepCopy.deepCopy(board);
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Error generating board copy.");
+                ClientGUI.frame.printToLog("Error generating board copy.");
                 return;
             }
 

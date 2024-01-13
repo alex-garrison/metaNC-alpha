@@ -13,6 +13,7 @@ public class ClientGUI extends JFrame {
     public static ClientGUI frame;
     private static NetworkConfigDialog networkConfigDialog;
     private static TutorialDialog tutorialDialog;
+    private static LogDialog logDialog;
 
     private boolean isNetworked;
     private boolean waitingForNewGame;
@@ -39,6 +40,7 @@ public class ClientGUI extends JFrame {
     private JLabel networkLabel;
     private JLabel playerLabel;
     private JButton tutorialButton;
+    private JButton logButton;
 
     private int[] currentMove;
     int clientID;
@@ -69,6 +71,8 @@ public class ClientGUI extends JFrame {
             boardPanels[boardIndex] = boardPanel;
             mainPanel.add(boardPanel);
         }
+
+        logDialog = new LogDialog(frame);
 
         bottomPanel = createBottomPanel();
         topPanel = createTopPanel();
@@ -132,6 +136,17 @@ public class ClientGUI extends JFrame {
         bottomLabel.setFont(new Font(bottomLabel.getFont().getFontName(), Font.PLAIN, 20));
         bottomLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        ImageIcon logIcon;
+        try {
+            logIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/logIcon.png")));
+        } catch (NullPointerException e) {
+            logIcon = new ImageIcon();
+        }
+
+        logIcon = new ImageIcon(logIcon.getImage().getScaledInstance(20,20, Image.SCALE_SMOOTH));
+        logButton = new JButton(logIcon);
+        logButton.addActionListener(new LogListener());
+
         ImageIcon tutorialIcon;
         try {
             tutorialIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/tutorialIcon.png")));
@@ -149,6 +164,8 @@ public class ClientGUI extends JFrame {
         gameOptionPanel.add(Box.createHorizontalGlue());
         gameOptionPanel.add(bottomLabel);
         gameOptionPanel.add(Box.createHorizontalGlue());
+        gameOptionPanel.add(logButton);
+        gameOptionPanel.add(Box.createRigidArea(new Dimension(5,-1)));
         gameOptionPanel.add(tutorialButton);
 
         return gameOptionPanel;
@@ -309,6 +326,14 @@ public class ClientGUI extends JFrame {
 
             tutorialDialog.setVisible(true);
             tutorialDialog.setLocationRelativeTo(frame);
+        }
+    }
+
+    private static class LogListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            logDialog.setVisible(true);
+            logDialog.setLocationRelativeTo(frame);
         }
     }
 
@@ -516,6 +541,10 @@ public class ClientGUI extends JFrame {
 
     public void setNewGameEnabled(Boolean isEnabled) {
         newGameButton.setEnabled(isEnabled);
+    }
+
+    public void printToLog(String text) {
+        logDialog.printToLog(text);
     }
 
     public static void startGUI() throws InterruptedException, InvocationTargetException {

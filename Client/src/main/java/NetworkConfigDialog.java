@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.*;
 
 class NetworkConfigDialog extends JDialog {
-
     private InetAddress DEFAULT_HOST;
     private final int DEFAULT_PORT = 8000;
 
@@ -31,7 +30,7 @@ class NetworkConfigDialog extends JDialog {
         try {
             DEFAULT_HOST = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
-            System.out.println("Could not get localHost : " + e);
+            ClientGUI.frame.printToLog("Could not get localHost : " + e);
         }
 
         getServerIp();
@@ -145,7 +144,7 @@ class NetworkConfigDialog extends JDialog {
             serverIpAddress = InetAddress.getByName(content.toString().split(":")[0].strip());
             serverPort = Integer.parseInt(content.toString().split(":")[1].strip());
         } catch (IOException e) {
-            System.out.println("Error retrieving server IP : " + e.getClass().getSimpleName());
+            ClientGUI.frame.printToLog("Error retrieving server IP : " + e.getClass().getSimpleName());
             serverIpAddress = DEFAULT_HOST;
             serverPort = DEFAULT_PORT;
         }

@@ -148,7 +148,7 @@ public class ServerClientHandler implements Runnable {
                                         writer.send("CLIENTID:" + clientID);
                                         writer.send("AUTHSUCCESS");
                                         serverClient.authoriseClient();
-                                    } else if (args[0].equals("AUTH") && !args[1].equals(Server.serverKey)) {
+                                    } else if (args[0].equals("AUTH") &!args[1].equals(Server.serverKey)) {
                                         writer.send("AUTHFAIL");
                                         authFailCounter++;
 
@@ -245,6 +245,7 @@ public class ServerClientHandler implements Runnable {
             if (writer != null) {
                 try {
                     writer.close();
+                    keepRunning = false;
                 } catch (IOException e) {
                     output("Error closing writer" + e);
                 }
