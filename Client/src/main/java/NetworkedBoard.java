@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NetworkedBoard extends Board {
-    private final HashMap<Integer, String> players;
+    private HashMap<Integer, String> players;
 
     public NetworkedBoard() {
         super();
@@ -13,6 +13,7 @@ public class NetworkedBoard extends Board {
 
     }
 
+    // Adds a player to the board and assigns them a player which is then returned
     public String addPlayer(int clientID) throws GameException {
         if (players.keySet().size() >= 2) {
             throw new GameException("Players already assigned");
@@ -26,6 +27,7 @@ public class NetworkedBoard extends Board {
         }
     }
 
+    // Returns the clientID of the given player
     public int getClientID(String player) {
         for (Map.Entry<Integer, String> entry: players.entrySet()) {
             if (entry.getValue().equals(player)) {
@@ -39,6 +41,7 @@ public class NetworkedBoard extends Board {
         players.clear();
     }
 
+    // Returns the clientID of the current player
     public int getCurrentClientID() {
         while (true) {
             if (players.keySet().size() == 2) {
@@ -57,9 +60,12 @@ public class NetworkedBoard extends Board {
         }
     }
 
+    // Returns a serialised version of the board
     public String serialiseBoard() {
         StringBuilder output = new StringBuilder();
         output.append("|||");
+
+        // Write the board to the output
         for (int boardIndex = 0; boardIndex < board.length; boardIndex++) {
             for (int row = 0; row < board[boardIndex].length; row++) {
                 for (int col = 0; col < board[boardIndex][row].length; col++) {
@@ -73,6 +79,8 @@ public class NetworkedBoard extends Board {
             }
             output.append("|||");
         }
+
+        // Write the metadata to the output
         String lastMoveString;
         if (lastMove[0] == -1) {
             lastMoveString = "---";
@@ -84,6 +92,7 @@ public class NetworkedBoard extends Board {
         return output.toString();
     }
 
+    // Takes a serialised board and parses it into the current board
     public void deserializeBoard(String serialisedBoard) throws GameException {
         Pattern boardPattern = Pattern.compile("(?=\\|\\|\\|(.*?)\\|\\|\\|)");
         Matcher boardMatcher = boardPattern.matcher(serialisedBoard);
@@ -91,6 +100,7 @@ public class NetworkedBoard extends Board {
         String[] serialisedBoards = new String[9];
         int i = 0;
 
+        // Use regex to find the sub-boards in the serialised board
         while (boardMatcher.find()) {
             String match = boardMatcher.group(1);
             serialisedBoards[i] = match;
@@ -103,6 +113,7 @@ public class NetworkedBoard extends Board {
             for (int boardIndex = 0; boardIndex < serialisedBoards.length; boardIndex++) {
                 for (String row: serialisedBoards[boardIndex].split("/")) {
                     for (String cell: row.split("")) {
+                        // Parse in the cells
                         if (cell.equals(" ")) cell = "";
                         board[boardIndex][rowCounter][colCounter] = cell;
                         colCounter++;
@@ -113,6 +124,7 @@ public class NetworkedBoard extends Board {
                 rowCounter = 0;
             }
 
+            // Use regex to find the metadata in the serialised board
             Pattern metadataPattern = Pattern.compile("<(.+)>");
             Matcher metadataMatcher = metadataPattern.matcher(serialisedBoard);
             if (!metadataMatcher.find()) throw new GameException("Error deserializing");
@@ -127,6 +139,7 @@ public class NetworkedBoard extends Board {
                     lastMoveArr[j] = Integer.parseInt(lastMoveString[j]);
                 }
             }
+            // Parse in the metadata
             lastMove = lastMoveArr;
             turn = metaData[1];
         } else {
@@ -134,6 +147,7 @@ public class NetworkedBoard extends Board {
         }
     }
 
+    // Makes a turn on the board using a player’s client identifier (Overloaded version)
     public void turn(int[] location, int clientID) throws GameException {
             String player = players.get(clientID);
 
@@ -141,7 +155,7 @@ public class NetworkedBoard extends Board {
                 throw new GameException("No player for this clientID");
             }
             if (player.equals(turn)) {
-                if (isValidMove(location) && !isInWonBoard(location) && isInCorrectLocalBoard(location)) {
+                if (isValidMove(location) && !isInWonBoard(location) && isInCorrectSubBoard(location)) {
                     board[location[0]][location[1]][location[2]] = player;
                     lastMove = location;
                 } else {

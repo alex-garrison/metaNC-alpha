@@ -52,6 +52,7 @@ public class ClientGUI extends JFrame {
         initGUI();
     }
 
+    // GUI setup
     private void initGUI() {
         FlatMacDarkLaf.setup();
 
@@ -83,6 +84,7 @@ public class ClientGUI extends JFrame {
         add(topPanel, BorderLayout.NORTH);
     }
 
+    // Create the sub-board panels
     private JPanel createBoardPanel(int boardIndex) {
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(3,3, -1, -1));
@@ -103,11 +105,12 @@ public class ClientGUI extends JFrame {
         return boardPanel;
     }
 
+    // Set the win panel for a sub-board
     private void setWinPanel(int boardIndex, Board board) {
         boardPanels[boardIndex].removeAll();
         boardPanels[boardIndex].setLayout(new BorderLayout());
 
-        JLabel label = new JLabel(board.getLocalBoardWins()[boardIndex].getWinner());
+        JLabel label = new JLabel(board.getSubBoardWins()[boardIndex].getWinner());
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setVerticalAlignment(SwingConstants.CENTER);
         label.setFont(new Font("monospaced", Font.PLAIN, 80));
@@ -118,6 +121,7 @@ public class ClientGUI extends JFrame {
         boardPanels[boardIndex].repaint();
     }
 
+    // Create the bottom games options panel
     private JPanel createBottomPanel() {
         JPanel gameOptionPanel = new JPanel();
         gameOptionPanel.setLayout(new BoxLayout(gameOptionPanel, BoxLayout.X_AXIS));
@@ -171,6 +175,7 @@ public class ClientGUI extends JFrame {
         return gameOptionPanel;
     }
 
+    // Create the top network options panel
     private JPanel createTopPanel() {
         JPanel networkOptionPanel = new JPanel();
         networkOptionPanel.setLayout(new BoxLayout(networkOptionPanel, BoxLayout.X_AXIS));
@@ -221,9 +226,9 @@ public class ClientGUI extends JFrame {
     }
 
     private class CellClickListener implements ActionListener {
-        private final int boardIndex;
-        private final int row;
-        private final int col;
+        private int boardIndex;
+        private int row;
+        private int col;
 
         public CellClickListener(int boardIndex, int row, int col) {
             this.boardIndex = boardIndex;
@@ -231,15 +236,18 @@ public class ClientGUI extends JFrame {
             this.col = col;
         }
 
+        // Called whenever a certain cell is clicked by the user
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
             currentMove = new int[]{boardIndex, row, col};
 
             if (isNetworked) {
+                // If the client is connected, send the move to the server
                 if (ClientMain.client != null) {
                     ClientMain.client.turn(currentMove);
                 }
             } else {
+                // If the client is not connected, notify the game loop to make the move
                 synchronized (cells) {
                     cells.notify();
                 }
@@ -248,15 +256,18 @@ public class ClientGUI extends JFrame {
     }
 
     private class NewGameClickListener implements ActionListener {
+        // Called when the new game button is clicked
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
             if (isNetworked) {
                 if (ClientMain.client != null) {
                     if (ClientMain.client.isConnected() && getMode().equals("PvP - online")) {
+                        // If the client is connected, send a new game request to the server
                         ClientMain.client.sendNewGame();
                     }
                 }
             } else {
+                // If the client is not connected, notify the game loop to start a new game
                 if (waitingForNewGame) {
                     synchronized (newGameButton) {
                         newGameButton.notify();
@@ -269,9 +280,11 @@ public class ClientGUI extends JFrame {
     }
 
     private class ConnectClickListener implements ActionListener {
+        // Called when the connect button is clicked
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
             if (!ClientMain.isHostSet()) {
+                // If the host and port are not set, open the network config dialog
                 if (networkConfigDialog == null) {
                     networkConfigDialog = new NetworkConfigDialog(frame);
                 }
@@ -286,15 +299,18 @@ public class ClientGUI extends JFrame {
                 }
             }
 
+            // Start the client and change the network button function
             ClientMain.startClient();
             setNetworkButtonFunction(false);
         }
     }
 
     private class DisconnectClickListener implements ActionListener {
+        // Called when the disconnect button is clicked
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
             if (ClientMain.client != null) {
+                // If the client is connected, disconnect and change the network button function
                 ClientMain.client.disconnect();
                 setNetworkButtonFunction(true);
             }
@@ -303,7 +319,8 @@ public class ClientGUI extends JFrame {
 
     private static class NetworkConfigListener implements ActionListener {
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
+            // Open the network config dialog
             if (networkConfigDialog == null) {
                 networkConfigDialog = new NetworkConfigDialog(frame);
             }
@@ -318,8 +335,10 @@ public class ClientGUI extends JFrame {
     }
 
     private static class TutorialListener implements ActionListener {
+        // Called when the tutorial button is clicked
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
+            // Open the tutorial dialog
             if (tutorialDialog == null) {
                 tutorialDialog = new TutorialDialog(frame);
             }
@@ -330,13 +349,16 @@ public class ClientGUI extends JFrame {
     }
 
     private static class LogListener implements ActionListener {
+        // Called when the log button is clicked
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent actionEvent) {
+            // Open the log dialog
             logDialog.setVisible(true);
             logDialog.setLocationRelativeTo(frame);
         }
     }
 
+    // Wait for the GUI to notify that a new game is ready
     public void waitForNewGame() throws InterruptedException {
         if (!isNetworked) {
             waitingForNewGame = true;
@@ -347,6 +369,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Wait for the GUI to notify that a mode is selected
     public void waitForModeSelect() throws InterruptedException {
         if (!isNetworked) {
             while ((!(getMode().equals("PvP") || getMode().equals("PvAI") && !Thread.currentThread().isInterrupted()))) {
@@ -355,6 +378,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Wait for the GUI to notify that a move is ready
     public int[] waitForMove() throws InterruptedException {
         if (!isNetworked) {
             synchronized(cells) {
@@ -366,6 +390,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Updates the cells on the GUI according to the board
     public void updateBoard(Board board) {
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -389,6 +414,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Updates the board colours for a specified player
     public void setBoardColours(Board board, String clientPlayer) {
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -396,10 +422,12 @@ public class ClientGUI extends JFrame {
                 Color col;
                 for (int i = 0; i < boardPanels.length; i++) {
                     col = defaultCol;
-                    if (board.getCorrectLocalBoard() == i && !board.isWon && board.whoseTurn().equals(clientPlayer)) {
+                    if (board.getCorrectSubBoard() == i && !board.isWon && board.whoseTurn().equals(clientPlayer)) {
+                        // Sets the colour of the sub-board the client is allowed to play in
                         col = BOARD_INDICATOR;
                     } else if (board.isWonBoard(i)) {
                         if (boardPanels[i].getComponent(0).getFont().getSize() != 80) {
+                            // Sets the panel for the won sub-board
                             setWinPanel(i, board);
                         }
                         col = WON_BOARD;
@@ -412,6 +440,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Updates the board colours
     public void setBoardColours(Board board) {
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -419,10 +448,12 @@ public class ClientGUI extends JFrame {
                 Color col;
                 for (int i = 0; i < boardPanels.length; i++) {
                     col = defaultCol;
-                    if (board.getCorrectLocalBoard() == i && !board.isWon) {
+                    if (board.getCorrectSubBoard() == i && !board.isWon) {
+                        // Sets the colour of the sub-board the player is allowed to play in
                         col = BOARD_INDICATOR;
                     } else if (board.isWonBoard(i)) {
                         if (boardPanels[i].getComponent(0).getFont().getSize() != 80) {
+                            // Sets the panel for the won sub-board
                             setWinPanel(i, board);
                         }
                         col = WON_BOARD;
@@ -435,6 +466,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Changes the network button according to whether the client is connected or not
     public void setNetworkButtonFunction(Boolean isConnect) {
         if (!SwingUtilities.isEventDispatchThread()) {
             SwingUtilities.invokeLater(() -> setNetworkButtonFunction(isConnect));
@@ -457,6 +489,7 @@ public class ClientGUI extends JFrame {
         }
     }
 
+    // Set the bottom label text and colour
     public void setBottomLabel(String text, boolean error, boolean win) {
         Color color = BACKGROUND;
         if (error) color = ERROR;
@@ -493,6 +526,7 @@ public class ClientGUI extends JFrame {
         isNetworked = networked;
     }
 
+    // Reset the board panels to their original state
     public void resetBoardPanels() {
         SwingUtilities.invokeLater(() -> {
             mainPanel.removeAll();
@@ -547,7 +581,9 @@ public class ClientGUI extends JFrame {
         logDialog.printToLog(text);
     }
 
+    // Main method to start the GUI
     public static void startGUI() throws InterruptedException, InvocationTargetException {
+        // Set MacOS specific properties
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("mac os") || os.contains("macos")) {

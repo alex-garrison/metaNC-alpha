@@ -4,11 +4,10 @@ public class Win implements Serializable {
     private boolean isWin;
     private String winner;
     private String winType;
-
-    private int localBoard;
+    private int subBoard;
 
     public Win() {
-        this.localBoard = -1;
+        this.subBoard = -1;
         this.isWin = false;
         this.winner = "No winner";
         this.winType = "No win";
@@ -18,14 +17,10 @@ public class Win implements Serializable {
         return winner;
     }
 
-    public void setWinConditions(int localBoard, Boolean isWin, String winType, String winner) {
-        this.localBoard = localBoard;
+    public void setWinConditions(int subBoard, Boolean isWin, String winType, String winner) {
+        this.subBoard = subBoard;
         this.winner = winner;
         this.isWin = isWin;
         this.winType = winType;
-    }
-
-    public String toString() {
-        return "client.Board : " + localBoard + " client.Win : " + isWin + " client.Win type " + winType;
     }
 }

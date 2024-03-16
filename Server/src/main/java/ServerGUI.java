@@ -117,9 +117,11 @@ public class ServerGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             ServerMain.serverMain.stopServer();
             setServerButtonFunction(true);
+            clearNetworkLabel();
         }
     }
 
+    // Changes the function of the server button to either starting the server or stopping it
     public void setServerButtonFunction(Boolean isStart) {
         JButton[] serverButtons = new JButton[]{startServerButton, stopServerButton};
         int buttonSelector = isStart ? 0 : 1;
@@ -134,6 +136,7 @@ public class ServerGUI extends JFrame {
         serverButton.repaint();
     }
 
+    // Creates a new lobby output panel and inserts it into the tab selector at its correct position
     public void addLobby(Lobby lobby) {
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
@@ -169,6 +172,7 @@ public class ServerGUI extends JFrame {
         }
     }
 
+    // Removes a lobby output panel from the lobby tabs
     public void removeLobby(Lobby lobby) {
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
@@ -183,6 +187,7 @@ public class ServerGUI extends JFrame {
         }
     }
 
+    // Displays the given text on the output panel of the lobby supplied
     public void printToLobby(String text, Lobby lobby) {
         if (!SwingUtilities.isEventDispatchThread()) {
                 SwingUtilities.invokeLater(() -> {
@@ -194,7 +199,7 @@ public class ServerGUI extends JFrame {
         }
     }
 
-
+    // Displays the given text on the server output panel
     public void printToServer(String text) {
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
@@ -215,9 +220,15 @@ public class ServerGUI extends JFrame {
         networkLabel.setText("");
     }
 
+    // Main method to start the GUI
     public static void startGUI() throws InterruptedException, InvocationTargetException {
-        System.setProperty("apple.awt.application.appearance", "system");
-        System.setProperty("apple.awt.application.name", "Ultimate Noughts and Crosses");
+        // Set MacOS specific properties
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("mac os") || os.contains("macos")) {
+            System.setProperty("apple.awt.application.appearance", "system");
+            System.setProperty("apple.awt.application.name", "Ultimate Noughts and Crosses Server");
+        }
 
         SwingUtilities.invokeAndWait(() -> {
             frame = new ServerGUI();

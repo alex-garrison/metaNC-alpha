@@ -2,10 +2,10 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ServerClient {
-    private final Socket serverClientSocket;
-    private final ServerClientHandler serverClientHandler;
-    private final Thread serverClientHandlerThread;
-    private final int clientID;
+    private Socket serverClientSocket;
+    private ServerClientHandler serverClientHandler;
+    private Thread serverClientHandlerThread;
+    private int clientID;
     private boolean isAuthorised;
     private boolean isConnected;
     private Lobby lobby;
@@ -14,13 +14,16 @@ public class ServerClient {
         this.serverClientSocket = serverClientSocket;
         this.serverClientHandler = serverClientHandler;
         this.serverClientHandlerThread = serverClientHandlerThread;
-        this.clientID = (this.hashCode() / 100000);
         this.isAuthorised = false;
         this.isConnected = true;
+
+        // Creates the client identifier from a hash of the socket and the ServerClientHandler process
+        this.clientID = (this.hashCode() / 100000);
 
         this.serverClientHandler.setClientID(this.clientID);
         this.serverClientHandler.setServerClient(this);
 
+        // Begin monitoring the client's connection and authorisation status
         new Thread(new authMonitor(this)).start();
         new Thread(new connMonitor(this)).start();
     }
@@ -29,6 +32,7 @@ public class ServerClient {
         serverClientHandler.stopRunning();
     }
 
+    // Called when the client authorises themselves
     public void authoriseClient() {
         isAuthorised = true;
         output("New client authorised");
@@ -70,12 +74,16 @@ public class ServerClient {
         public connMonitor(ServerClient serverClient) {
             this.serverClient = serverClient;
         }
+
+        // Starts the connection monitoring process
         public void run() {
+            // Waits for the server-client handling thread to complete
             try {
                 serverClientHandlerThread.join();
             } catch (InterruptedException e) {
                 output("Error waiting for serverClientHandlerThread to stop");
             } finally {
+                // Gracefully disconnect the server-client
                 if (serverClientSocket != null) {
                     try {
                         serverClientSocket.close();
@@ -85,10 +93,11 @@ public class ServerClient {
                 }
 
                 if (isAuthorised) {
+                    // Remove the server-client from the server’s, and lobby’s, list of connected clients
                     if (lobby != null) {
                         lobby.serverClientDisconnected(serverClient);
                     } else {
-                        Server.serverClientDisconnected(serverClient, false);
+                        Server.serverClientDisconnected(serverClient);
                     }
                 }
                 isConnected = false;
@@ -96,6 +105,7 @@ public class ServerClient {
         }
     }
 
+    // Starts the authorisation monitoring process
     private class authMonitor implements Runnable {
         ServerClient serverClient;
         public authMonitor(ServerClient serverClient) {
@@ -103,9 +113,11 @@ public class ServerClient {
         }
         public void run() {
             try {
+                // Waits 20 seconds for the server-client to authorise itself
                 Thread.sleep(20000);
 
                 if (!isAuthorised) {
+                    // If the server-client has not authorised itself, disconnect the server-client
                     serverClientHandler.send("DISCONNECT");
                     serverClient.stopClient();
                 }

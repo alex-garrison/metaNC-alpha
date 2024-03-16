@@ -6,8 +6,8 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
 public class LogDialog extends JDialog {
-    private final JPanel buttonPanel;
-    private final JButton closeButton;
+    private JPanel buttonPanel;
+    private JButton closeButton;
     private static JPanel outputPanel;
     private static JTextArea output;
 
@@ -55,6 +55,7 @@ public class LogDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    // Displays the given text on the output panel of the log dialog
     public void printToLog(String text) {
         if (!SwingUtilities.isEventDispatchThread()) {
             try {

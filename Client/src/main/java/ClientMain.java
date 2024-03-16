@@ -15,6 +15,7 @@ public class ClientMain {
     private static int port;
     private static boolean hostSet;
 
+    // Starts the client GUI and creates a single threaded executor service to run the game loop
     public static void main(String[] args) {
         try {
             ClientGUI.startGUI();
@@ -45,6 +46,7 @@ public class ClientMain {
         return port;
     }
 
+    // Starts the networked client on a separate thread
     public static void startClient() {
         if (hostSet) {
             stopGameloop();
@@ -57,16 +59,19 @@ public class ClientMain {
         }
     }
 
+    // Starts the game loop with the given parameters
     private static void startGameloop(boolean waitForNewGame, boolean waitForModeSelect) {
         gameLoop = new GameLoop(waitForNewGame, waitForModeSelect);
         gameLoopFuture = executorService.submit(gameLoop);
     }
 
+    // Stops the game loop
     private static void stopGameloop() {
         gameLoop.stopRunning();
         gameLoopFuture.cancel(true);
     }
 
+    // Restarts the game loop with the given parameters
     public static void restartGameloop(boolean waitForNewGame, boolean waitForModeSelect) {
         stopGameloop();
         startGameloop(waitForNewGame, waitForModeSelect);
@@ -77,6 +82,7 @@ public class ClientMain {
         public boolean gameLoopRunning;
         private boolean waitForNewGame;
         private boolean waitForModeSelect;
+        private final int AI_MOVE_DELAY = 75;
 
         public GameLoop(boolean waitForNewGame, boolean waitForModeSelect) {
             this.waitForNewGame = waitForNewGame;
@@ -84,6 +90,7 @@ public class ClientMain {
             gameLoopRunning = true;
         }
 
+        // Waits for the user to select a mode and start a new game, then begins the main game loop
         public void run() {
             if (waitForNewGame) {
                 try {
@@ -106,7 +113,9 @@ public class ClientMain {
             gameLoop();
         }
 
+        // Begins the main local game loop
         private void gameLoop() {
+            // Clears the GUI and creates a new board
             ClientGUI.frame.resetBoardPanels();
             ClientGUI.frame.clearBottomLabel();
             ClientGUI.frame.clearNetworkLabel();
@@ -115,8 +124,7 @@ public class ClientMain {
             board.emptyBoard();
             board.setStarter("X");
 
-            long AI_MOVE_DELAY = 75;
-
+            // Sets the mode to either PvP or PvAI
             boolean isPVP = false;
             boolean isPVAI = false;
 
@@ -136,6 +144,7 @@ public class ClientMain {
             AiAgent ai = new AiAgent(board);
 
             while (gameLoopRunning) {
+                // Checks if the game has been won or drawn
                 if (board.isWin()) {
                     if (board.winner.equals("D")) {
                         ClientGUI.frame.setBottomLabel("Draw", false, false);
@@ -148,6 +157,7 @@ public class ClientMain {
                     break;
                 }
 
+                // Updates the GUI
                 try {
                     ClientGUI.frame.updateBoard(board);
                     ClientGUI.frame.setBoardColours(board);
@@ -156,12 +166,14 @@ public class ClientMain {
                 }
 
                 if (isPVP) {
+                    // Waits for the user to make a move
                     try {
                         moveLocation = ClientGUI.frame.waitForMove();
                     } catch (InterruptedException e) {
                         gameLoopRunning = false; continue;
                     }
                 } else if (isPVAI) {
+                    // Waits for the user or AI to make a move
                     if (board.whoseTurn().equals("X")) {
                         try {
                             moveLocation = ClientGUI.frame.waitForMove();
@@ -170,7 +182,7 @@ public class ClientMain {
                         }
                     } else {
                         try {
-                            moveLocation = ai.getMove();
+                            moveLocation = ai.getMove(false);
                             Thread.sleep(AI_MOVE_DELAY);
                         } catch (InterruptedException e) {
                             break;
@@ -180,6 +192,7 @@ public class ClientMain {
                     }
                 }
 
+                // Makes the move
                 try {
                     board.turn(board.whoseTurn(), moveLocation);
                 } catch (GameException e) {

@@ -5,18 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44367590-60b1-46f6-a626-bf11c117f3a0" name="Changes" comment="Added log feature for client and bug fixes">
-      <change afterPath="$PROJECT_DIR$/Client/src/main/java/LogDialog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/src/main/resources/images/logIcon.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Client/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/AiAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Board.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ClientMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/DeepCopy.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/DeepCopy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Evaluate.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/GameTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/GameTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/LogDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/LogDialog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/NetworkConfigDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/NetworkedBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/NetworkedBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/TutorialDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/Win.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/Win.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Lobby.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/main/java/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +73,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.uml&quot;,
     &quot;two.files.diff.last.used.file&quot;: &quot;/Users/alex/Programming/NEA/Actual/metaNC-networked/src/server/ServerMain.java&quot;,
     &quot;two.files.diff.last.used.folder&quot;: &quot;/Users/alex/Programming/NEA/Practice/MinimaxTestGUI/src/client&quot;
   }
@@ -101,7 +111,7 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="ServerMain" />
       <module name="Server" />
-      <option name="PROGRAM_PARAMETERS" value="--headless -K hello" />
+      <option name="PROGRAM_PARAMETERS" value="--headless -K test_password" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -148,7 +158,12 @@
       <workItem from="1702148654292" duration="2059000" />
       <workItem from="1703785331027" duration="99000" />
       <workItem from="1703785438615" duration="3166000" />
-      <workItem from="1705141315600" duration="4356000" />
+      <workItem from="1705141315600" duration="5258000" />
+      <workItem from="1707061903155" duration="1133000" />
+      <workItem from="1708293468774" duration="1025000" />
+      <workItem from="1709210488989" duration="607000" />
+      <workItem from="1709579823125" duration="25488000" />
+      <workItem from="1710365602874" duration="3106000" />
     </task>
     <task id="LOCAL-00001" summary="Implemented better AI">
       <created>1697980894109</created>
@@ -171,7 +186,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701378196450</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added log feature for client and bug fixes">
+      <created>1705190188621</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1705190188621</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -1,6 +1,7 @@
 import java.io.*;
 
 public class DeepCopy {
+    // Returns a deep copy of a game board, with no reference to the board it was copied from
     public static Board deepCopy(Board object) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);

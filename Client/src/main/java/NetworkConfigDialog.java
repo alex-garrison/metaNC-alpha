@@ -9,12 +9,12 @@ class NetworkConfigDialog extends JDialog {
     private InetAddress DEFAULT_HOST;
     private final int DEFAULT_PORT = 8000;
 
-    private final JTextField ipField;
-    private final JTextField portField;
-    private final JTextPane clientIDPane;
-    private final JTextPane lobbyIDPane;
-    private final JButton okButton;
-    private final JButton cancelButton;
+    private JTextField ipField;
+    private JTextField portField;
+    private JTextPane clientIDPane;
+    private JTextPane lobbyIDPane;
+    private JButton okButton;
+    private JButton cancelButton;
 
     private InetAddress serverIpAddress;
     private int serverPort;
@@ -33,7 +33,7 @@ class NetworkConfigDialog extends JDialog {
             ClientGUI.frame.printToLog("Could not get localHost : " + e);
         }
 
-        getServerIp();
+        getServerInfo();
 
         ipField = new JTextField(DEFAULT_HOST.getHostAddress(), 15);
         ipField.setFont(new Font("monospaced", Font.PLAIN, 13));
@@ -123,10 +123,12 @@ class NetworkConfigDialog extends JDialog {
         return port;
     }
 
-    private void getServerIp() {
+    // Retrieves and returns the server IP and port from the project website
+    private void getServerInfo() {
         String urlStr = "https://alex-garrison.github.io/server-info";
 
         try {
+            // Open a connection to the server-info page
             URL url = URI.create(urlStr).toURL();
             URLConnection connection = url.openConnection();
 
@@ -135,12 +137,14 @@ class NetworkConfigDialog extends JDialog {
             String line;
             StringBuilder content = new StringBuilder();
 
+            // Read the server IP and port from the page
             while ((line = reader.readLine()) != null) {
                 content.append(line).append("\n");
             }
 
             reader.close();
 
+            // Set the server IP and port
             serverIpAddress = InetAddress.getByName(content.toString().split(":")[0].strip());
             serverPort = Integer.parseInt(content.toString().split(":")[1].strip());
         } catch (IOException e) {

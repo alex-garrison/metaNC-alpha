@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 
 public class TutorialDialog extends JDialog {
-    private final JPanel cardPanel;
-    private final CardLayout cardLayout;
-    private final JPanel buttonPanel;
-    private final JButton closeButton;
-    private final int maxPages = 4;
+    private JPanel cardPanel;
+    private CardLayout cardLayout;
+    private JPanel buttonPanel;
+    private JButton closeButton;
+    private int maxPages = 4;
     private int currentIndex = 1;
 
     public TutorialDialog(ClientGUI clientGUI) {
@@ -70,6 +70,7 @@ public class TutorialDialog extends JDialog {
         }
     }
 
+    // Creates and returns the tutorial page that corresponds with the identifier supplied
     private JPanel createTutorialPanel(int tutorialPage) {
         JEditorPane editorPane = new JEditorPane();
         editorPane.setEditable(false);
@@ -79,6 +80,7 @@ public class TutorialDialog extends JDialog {
         editorPane.setContentType("text/html");
 
         try {
+            // Load the HTML file for the tutorial page
             URL resourceURL = this.getClass().getResource("/tutorialPages/page" + tutorialPage + ".html");
 
             editorPane.setPage(resourceURL);

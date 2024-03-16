@@ -3,12 +3,11 @@ import java.io.*;
 import java.net.*;
 
 public class Client implements Runnable {
-    private final InetAddress host;
-    private final int port;
+    private InetAddress host;
+    private int port;
 
     private final int TIMEOUT_MILLIS = 500;
 
-    private int clientID;
     private String player;
     private boolean isClientTurn;
     private boolean boardWon;
@@ -22,11 +21,11 @@ public class Client implements Runnable {
         this.host = host;
         this.port = port;
 
-        clientID = -1;
         isConnected = false;
         boardWon = false;
     }
 
+    // Connects to the server and handles the UI elements associated with networking
     public void run() {
         ClientGUI.frame.resetBoardPanels();
         ClientGUI.frame.clearBottomLabel();
@@ -43,12 +42,14 @@ public class Client implements Runnable {
 
             ClientGUI.frame.setNewGameEnabled(false);
 
+            // Start the reader and writer threads
             reader = new ClientReader();
             Thread readerThread = new Thread(reader);
             readerThread.start();
 
             writer = new ClientWriter();
 
+            // Wait for the reader thread to stop
             try {
                 readerThread.join();
             } catch (InterruptedException e) {
@@ -65,7 +66,6 @@ public class Client implements Runnable {
             ClientGUI.frame.setNetworkButtonFunction(true);
             ClientGUI.frame.setNewGameEnabled(true);
             ClientGUI.frame.setClientID(0); ClientGUI.frame.setLobbyID(0);
-            clientID = 0;
 
         } else {
             ClientGUI.frame.setNetworkLabel("Error connecting" , true);
@@ -84,6 +84,7 @@ public class Client implements Runnable {
         ClientMain.restartGameloop(true, true);
     }
 
+    // Sends a turn to the server
     public void turn(int[] location) {
         if (isClientTurn && !boardWon) {
             if (location.length == 3) {
@@ -93,6 +94,7 @@ public class Client implements Runnable {
         }
     }
 
+    // Connects to the server and returns whether the connection was successful or not.
     private boolean connectToServer() {
         int connectionFailCounter = 0;
         while (clientSocket == null) {
@@ -116,6 +118,7 @@ public class Client implements Runnable {
         return false;
     }
 
+    // Disconnects from the server
     public void disconnect() {
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
@@ -127,10 +130,12 @@ public class Client implements Runnable {
         }
     }
 
+    // Retrieves and returns the server key from the project website
     public static String getServerKey() {
         String urlStr = "https://alex-garrison.github.io/server-key";
 
         try {
+            // Opens a connection to the URL
             URL url = URI.create(urlStr).toURL();
             URLConnection connection = url.openConnection();
 
@@ -139,12 +144,14 @@ public class Client implements Runnable {
             String line;
             StringBuilder content = new StringBuilder();
 
+            // Reads the content of the page
             while ((line = reader.readLine()) != null) {
                 content.append(line).append("\n");
             }
 
             reader.close();
 
+            // Returns the content of the page
             return content.toString().strip();
         } catch (IOException e) {
             ClientGUI.frame.printToLog("Error retrieving server key : " + e.getClass().getSimpleName());
@@ -152,6 +159,7 @@ public class Client implements Runnable {
         return null;
     }
 
+    // Sends a new game request to the server
     public void sendNewGame() {
         if (writer != null) {
             ClientGUI.frame.printToLog("Sending new game");
@@ -159,18 +167,20 @@ public class Client implements Runnable {
         }
     }
 
+    // Sets the clientID in the GUI
     private void setClientID(int clientID) {
-        this.clientID = clientID;
         ClientGUI.frame.setClientID(clientID);
         ClientGUI.frame.printToLog("Set clientID : " + clientID);
     }
 
+    // Sets the lobbyID in the GUI
     private void setLobbyID(int lobbyID) {
         ClientGUI.frame.setLobbyID(lobbyID);
         ClientGUI.frame.printToLog("Set lobbyID : " + lobbyID);
         ClientGUI.frame.setNewGameEnabled(true);
     }
 
+    // Handles the disconnection of the lobby
     private void lobbyDisconnected() {
         ClientGUI.frame.printToLog("Lobby disconnected");
         ClientGUI.frame.setLobbyID(0);
@@ -180,16 +190,19 @@ public class Client implements Runnable {
         ClientGUI.frame.setNetworkLabel("Lobby disconnected", true);
     }
 
+    // Sets the player in the GUI
     public void setPlayer(String player) {
         this.player = player;
         ClientGUI.frame.setPlayerLabel(this.player, false);
     }
 
+    // Shows that it's the client's turn in the GUI
     public void setClientTurn(boolean isClientTurn) {
         ClientGUI.frame.setPlayerLabel(ClientGUI.frame.getPlayerLabel(), isClientTurn);
         this.isClientTurn = true;
     }
 
+    // Shows that the board has been won in the GUI
     public void boardWon(String winner) {
         if (winner.equals(player)) {
             ClientGUI.frame.setBottomLabel("You won!", false, true);
@@ -205,6 +218,7 @@ public class Client implements Runnable {
         return isConnected;
     }
 
+    // Deserialises a received board and displays it on the GUI
     private void updateBoard(String serialisedBoard) {
         try {
             NetworkedBoard newNetworkedBoard = new NetworkedBoard();
@@ -221,7 +235,7 @@ public class Client implements Runnable {
 
             newNetworkedBoard.isWin();
             ClientGUI.frame.updateBoard(newNetworkedBoard);
-            ClientGUI.frame.setBoardColours(newNetworkedBoard, player);
+            ClientGUI.frame.setBoardColours(newNetworkedBoard);
             ClientGUI.frame.clearBottomLabel();
         } catch (GameException e) {
             ClientGUI.frame.printToLog("Board error : " + e);
@@ -238,9 +252,11 @@ public class Client implements Runnable {
             keepRunning = true;
         }
 
+        // Begins the reader service
         public void run() {
             while (keepRunning) {
                 if (reader == null) {
+                    // Create the reader
                     try {
                         reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     } catch (IOException e) {
@@ -248,16 +264,20 @@ public class Client implements Runnable {
                     }
                 } else {
                     try {
+                        // Checks for null data and if there is a lot of it, stop the reader
                         if (nullDataCounter >= 5) {
                             ClientGUI.frame.printToLog("Error with server.");
                             keepRunning = false; continue;
                         }
 
+                        // Reads the data from the server
                         String receivedData = reader.readLine();
 
                         if (receivedData == null) {
                             nullDataCounter++;
                         } else if (!receivedData.isEmpty()){
+                            // Parse the data and execute the appropriate function
+
                             String[] args = receivedData.split(":");
                             if (args[0].equals("CLIENTID")) {
                                 try {
@@ -365,6 +385,7 @@ public class Client implements Runnable {
             }
         }
 
+        // Sends the data passed to it to the server
         public void send(String message) {
             boolean messageSent = false;
             int errorCount = 0;
@@ -376,6 +397,7 @@ public class Client implements Runnable {
                     writer.flush();
                     messageSent = true;
                 } catch (SocketTimeoutException e) {} catch (IOException e) {
+                    // If there are too many errors, stop trying to send the message
                     if (errorCount >= 5) {
                         return;
                     } else {
@@ -386,6 +408,7 @@ public class Client implements Runnable {
             }
         }
 
+        // Closes the writer
         public void close() {
             if (writer != null) {
                 try {
